@@ -15,6 +15,12 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 - **Safe sharing:** declarative, versioned puzzle data with bounded sizes and no user scripts or executable assets.
 - **Accessible XR:** design for Quest WebXR and desktop from the same deterministic simulation.
 
+## Play online through GitHub Pages
+
+**Public game URL (after enabling Pages and a successful deploy):** https://michaelwave369.github.io/PieceByPiece/
+
+The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
+
 ## Play the Living Neighborhood (Rungs 1–3)
 
 The **Living Block** vertical slice uses the same strict `piecebypiece.city.v1` city-pack structure as The Commons.
