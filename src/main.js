@@ -225,6 +225,7 @@ function placeAt(cell) {
   if(result.cityCompleted)notify('THE BLOCK IS ALIVE! Enter your newly built neighborhood.');
   else if(result.buildingCompleted)notify(pack.buildings.find(b=>b.id===piece.buildingId).name+' is complete!');
   else notify('Perfect fit! The city is coming together.');
+  audio.tone(result.buildingCompleted?740:550,.045,.25);
   selected=nextUnplaced(pack,state)?.id || null;
   rotation=0;hovered=null;
   refreshHint();refreshGhost();refreshUI();refreshShelf();
@@ -252,6 +253,7 @@ function refreshShelf() {
   }
   shelfButton('NEXT PIECES',0,-.85,'page',null);
   shelfButton('ROTATE 90°',0,-1.04,'rotate',null);
+  shelfButton(audio.enabled?'SOUND OFF':'SOUND ON',0,-1.42,'sound',null);
   if(progress(pack,state).complete)shelfButton('ENTER CITY',0,-1.23,'explore',null);
 }
 const returnSign=new THREE.Group();
@@ -555,7 +557,8 @@ window.addEventListener('keydown',event=>{
   if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
   heldKeys.add(event.code);
   if(event.code==='KeyR' && !event.repeat)turnPiece();
-  if(event.code==='Escape' && mode==='explore')setMode('workshop');
+  if(event.code==='Escape' && inside)leaveInterior();
+  else if(event.code==='Escape' && mode==='explore')setMode('workshop');
 });
 window.addEventListener('keyup',event=>heldKeys.delete(event.code));
 window.addEventListener('blur',()=>heldKeys.clear());
@@ -570,8 +573,8 @@ for(let i=0;i<2;i++) {
   controller.addEventListener('squeezestart',()=>{
     if(mode==='workshop')turnPiece();
     else {
-      cityRoot.rotation.y+=Math.PI/4;
-      notify('Turned 45°. Select the ground to teleport.');
+      snapTurnInPlace(Math.PI/4);
+      notify('Turned 45°. Select clear ground to teleport.');
     }
   });
   const grip=renderer.xr.getControllerGrip(i);
@@ -596,6 +599,21 @@ renderer.xr.addEventListener('sessionend',()=>{
 $('rotate').addEventListener('click',turnPiece);
 $('enter-city').addEventListener('click',()=>setMode('explore'));
 $('return-workshop').addEventListener('click',()=>setMode('workshop'));
+$('exit-interior').addEventListener('click',leaveInterior);
+$('close-dialogue').addEventListener('click',closeDialogue);
+async function toggleAudio(){
+  const target=!audio.enabled;
+  try { await audio.setEnabled(target); }
+  catch(error) {notify('Audio unavailable: '+error.message);}
+  $('sound-enabled').checked=audio.enabled;
+  refreshShelf();
+}
+$('sound-enabled').addEventListener('change',async event=>{
+  try { await audio.setEnabled(event.target.checked); }
+  catch(error){notify('Audio unavailable: '+error.message);}
+  $('sound-enabled').checked=audio.enabled;
+  refreshShelf();
+});
 $('toggle-hints').addEventListener('change',event=>{hintsOn=event.target.checked;refreshHint();});
 $('reset').addEventListener('click',()=>{
   if(!window.confirm('Reset this neighborhood? Your assembled pieces and local quests will be cleared.'))return;
@@ -623,9 +641,9 @@ function desktopExploreStep(delta) {
   if(heldKeys.has('KeyA'))motion.sub(side);
   if(motion.lengthSq()) {
     motion.normalize().multiplyScalar(Math.min(delta,.05)*4);
-    camera.position.add(motion);
-    camera.position.x=THREE.MathUtils.clamp(camera.position.x,-CITY.width*CELL/2+.3,CITY.width*CELL/2-.3);
-    camera.position.z=THREE.MathUtils.clamp(camera.position.z,-CITY.height*CELL/2+.3,CITY.height*CELL/2-.3);
+    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside);
+    camera.position.x=next.x;
+    camera.position.z=next.z;
   }
 }
 function animate() {
@@ -633,12 +651,12 @@ function animate() {
   if(!xrActive && mode==='workshop')controls.update();
   desktopExploreStep(delta);
   if(xrActive && mode==='workshop')updateGhostFromRay(rayFromController(xrControllers[0]));
-  for(const marker of missionIcons) {
-    marker.label.quaternion.copy(renderer.xr.isPresenting?renderer.xr.getCamera().quaternion:camera.quaternion);
-    marker.root.children[0].rotation.y+=delta;
-  }
+  audio.tick(delta,mode==='explore');
+  const facing=renderer.xr.isPresenting?renderer.xr.getCamera().quaternion:camera.quaternion;
+  for(const label of lifeLabels)label.quaternion.copy(facing);
+  for(const label of speechRoot.children)label.quaternion.copy(facing);
   renderer.render(scene,camera);
 }
-refreshPlaced();positionStage();refreshHint();refreshGhost();refreshMissions();refreshUI();refreshShelf();
+refreshPlaced();positionStage();refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
 notify('Welcome to the workshop. Assemble the first block, one piece at a time.');
 renderer.setAnimationLoop(animate);
