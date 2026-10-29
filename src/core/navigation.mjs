@@ -3,6 +3,7 @@
  * cityRoot-local meters. No Three.js dependency; shared by desktop and XR.
  */
 import { buildingComplete } from './puzzle.mjs';
+import { OVERLOOK_GATE_X,OVERLOOK_GATE_Z } from './city-systems.mjs';
 
 export const CELL = 1.12;
 const RADIUS = .29;
@@ -22,12 +23,13 @@ function insideRectangle(x, z, center, halfX, halfZ) {
     Math.abs(z - center.z) < halfZ + RADIUS;
 }
 
-export function walkable(pack, session, x, z, room = null) {
+export function walkable(pack, session, x, z, room = null, gateOpen = true) {
   if (!Number.isFinite(x) || !Number.isFinite(z)) return false;
   if (room) return Math.abs(x) <= 2.5 - RADIUS && Math.abs(z) <= 2.65 - RADIUS;
   const extentX = pack.city.grid.width * CELL / 2 - RADIUS;
   const extentZ = pack.city.grid.height * CELL / 2 - RADIUS;
   if (Math.abs(x) > extentX || Math.abs(z) > extentZ) return false;
+  if (!gateOpen && x > OVERLOOK_GATE_X && z > OVERLOOK_GATE_Z) return false;
   for (const id of ['cafe','home']) {
     if (!buildingComplete(pack,session,id)) continue;
     const center = anchorOf(pack,id);
@@ -37,20 +39,20 @@ export function walkable(pack, session, x, z, room = null) {
 }
 
 /** Axis-separated sliding with a sub-step limit prevents tunnelling through walls. */
-export function moveWalkable(pack, session, from, delta, room = null) {
+export function moveWalkable(pack, session, from, delta, room = null, gateOpen = true) {
   if (![from.x,from.z,delta.x,delta.z].every(Number.isFinite)) return { ...from };
   const maxDelta = Math.max(Math.abs(delta.x),Math.abs(delta.z));
   const count = Math.max(1,Math.min(200,Math.ceil(maxDelta / .12)));
   let x=from.x, z=from.z;
   for(let i=0;i<count;i++) {
     const dx=delta.x/count, dz=delta.z/count;
-    if(walkable(pack,session,x+dx,z,room)) x+=dx;
-    if(walkable(pack,session,x,z+dz,room)) z+=dz;
+    if(walkable(pack,session,x+dx,z,room,gateOpen)) x+=dx;
+    if(walkable(pack,session,x,z+dz,room,gateOpen)) z+=dz;
   }
   return { x,z };
 }
 
 /** Local-space end point for headset teleports. Invalid surfaces are rejected. */
-export function canTeleport(pack, session, localPoint, room = null) {
-  return Boolean(localPoint && walkable(pack,session,localPoint.x,localPoint.z,room));
+export function canTeleport(pack, session, localPoint, room = null, gateOpen = true) {
+  return Boolean(localPoint && walkable(pack,session,localPoint.x,localPoint.z,room,gateOpen));
 }

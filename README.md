@@ -15,7 +15,7 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 - **Safe sharing:** declarative, versioned puzzle data with bounded sizes and no user scripts or executable assets.
 - **Accessible XR:** design for Quest WebXR and desktop from the same deterministic simulation.
 
-## Play the Living Neighborhood (Rungs 1–2)
+## Play the Living Neighborhood (Rungs 1–3)
 
 The **Living Block** vertical slice uses the same strict `piecebypiece.city.v1` city-pack structure as The Commons.
 
@@ -30,14 +30,16 @@ Open the local address printed by Vite. The game bundles locally through `npm ru
 
 **Quest/WebXR:** Use either trigger to select a part from the in-world shelf and place it on the small tabletop board. Use a grip to rotate parts and **NEXT PIECES** to browse the shelf. Once assembled, choose **ENTER CITY**. In Explore Mode, point at **clear ground** and trigger to teleport; grip snap-turns 45° around the viewer. Select citizens to talk and select the full dialogue panel to dismiss it. Select entrance and exit signs to enter and leave small building interiors. A city sign returns you to the workshop.
 
+**Rung 3: City Systems:** After helping the three neighbors, reconnect the **Café Generator**, **House Relay**, and **Garden Relay** to light the lantern walk and open the **Commons Overlook**. Click or VR-trigger outdoor relay crystals, or use the right-hand Lantern Grid panel. Required infrastructure links depend on actual placed building parts. The overlook cannot be entered until opened and stays open permanently once restored. See [Rung 3 playtest](docs/RUNG3_CITY_SYSTEMS.md).
+
 Progress is saved locally in the browser (no account, network service, or subscription). No timer or surprise combat interrupts the workshop. Optional, locally synthesized ambient sound starts **only after opt-in**. The VR controls are implemented but still need a real Quest 3 comfort/performance playtest.
 
-This is a prototype, not the complete five-city campaign. There are three modular building puzzles, three simple neighbor conversations/errands and two cutaway interiors, but no advanced NPC AI, combat, published public catalogue, or community authoring UI yet. See [Rung 2 playtest checklist](docs/RUNG2_PLAYTEST.md).
+This is a prototype, not the complete five-city campaign. There are three modular building puzzles, three simple neighbor conversations/errands, two cutaway interiors, and one small city-power environmental puzzle, but no advanced NPC AI, combat, published public catalogue, or community authoring UI yet. See [Rung 2 playtest checklist](docs/RUNG2_PLAYTEST.md).
 
 ## Checks
 
 ```bash
-npm run check    # pure puzzle-rule tests and both schema packs
+npm run check    # puzzles, city circuits, story, navigation, and v1 pack validation
 npm run build    # static web bundle
 ```
 
