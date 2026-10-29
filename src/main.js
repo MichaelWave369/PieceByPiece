@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import pack from '../game/campaign/the-living-block.json';
+import systemsPack from '../game/campaign/living-block-systems.json';
 import { blankSession, restoreSession, nextUnplaced, tryPlace, progress, buildingComplete, completeMission } from './core/puzzle.mjs';
 import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './render/prefabs.js';
 import { makeCompletedBuilding } from './render/buildings.js';
@@ -9,12 +10,19 @@ import { NEIGHBORS, getNeighbor, nextErrand, carrying, talkToNeighbor } from './
 import { anchorOf, moveWalkable, canTeleport } from './core/navigation.mjs';
 import { createNeighbor, createDoorMarker, createInterior, createSpeechPanel } from './render/life.js';
 import { NeighborhoodAudio } from './audio/ambient.js';
+import { blankCitySystems, restoreCitySystems, validateSystemDefinition, circuitStatus, toggleSystemNode, available } from './core/city-systems.mjs';
+import { createCitySystemsScene } from './render/city-systems.js';
 import './style.css';
 
 const $ = id => document.getElementById(id);
 const SAVE_KEY = 'piece-by-piece:campaign:the-living-block:v1';
+const SYSTEM_SAVE_KEY = 'piece-by-piece:systems:the-living-block:v1';
+const configErrors = validateSystemDefinition(pack,systemsPack);
+if(configErrors.length)throw new Error('Invalid campaign city infrastructure: '+configErrors.join(', '));
 const CITY = pack.city.grid;
 let state = loadSave();
+let systemsState = loadSystems();
+let currentCircuit=circuitStatus(pack,systemsPack,state,systemsState);
 let mode = 'workshop';
 let selected = nextUnplaced(pack, state)?.id || null;
 let rotation = 0;
@@ -35,6 +43,14 @@ function loadSave() {
 function save() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
   catch { notify('Local save unavailable. Your progress lasts only this session.'); }
+}
+function loadSystems(){
+  try {return restoreCitySystems(pack,systemsPack,JSON.parse(localStorage.getItem(SYSTEM_SAVE_KEY)));}
+  catch {return blankCitySystems(pack);}
+}
+function saveSystems(){
+  try {localStorage.setItem(SYSTEM_SAVE_KEY,JSON.stringify(systemsState));}
+  catch {notify('Infrastructure progress could not be saved locally.');}
 }
 function notify(message) {
   $('message').textContent = message;
@@ -87,6 +103,8 @@ const lifeLabels = [];
 interiorRoot.visible=false;
 scene.add(interiorRoot);
 cityRoot.add(placedRoot,completedRoot,hintRoot,peopleRoot,doorsRoot,speechRoot);
+const systemsVisual=createCitySystemsScene(systemsPack,CITY);
+cityRoot.add(systemsVisual.root);
 
 const base = new THREE.Mesh(
   new THREE.BoxGeometry(CITY.width*CELL+.6,.25,CITY.height*CELL+.6),
@@ -391,6 +409,45 @@ function positionStage() {
   workbench.visible=xrActive && mode==='workshop';
   ground.visible=!xrActive && mode==='workshop';
   returnSign.visible=mode==='explore' && !inside;
+  systemsVisual.root.visible=mode==='explore' && !inside;
+}
+function refreshSystemControls(){
+  currentCircuit=circuitStatus(pack,systemsPack,state,systemsState);
+  systemsVisual.apply(currentCircuit);
+  systemsVisual.root.visible=mode==='explore' && !inside;
+  $('power-count').textContent=currentCircuit.activeSwitches+' / '+currentCircuit.totalSwitches;
+  $('power-message').textContent=currentCircuit.gateOpen
+    ? 'The grid has restored the public path. This overlook remains open, even if a relay is switched off.'
+    : currentCircuit.lampsOn
+      ? 'The lanterns glow. One more connection will open the Commons Overlook.'
+      : 'Help your neighbors, then activate the three outdoor relays to route power along the street.';
+  $('overlook-message').replaceChildren();
+  const label=document.createTextNode('COMMONS OVERLOOK ');
+  const detail=document.createElement('strong');
+  detail.textContent=currentCircuit.gateOpen?'Open to everyone':'Locked until powered';
+  $('overlook-message').append(label,detail);
+  $('power-switches').replaceChildren();
+  for(const node of systemsPack.nodes.filter(n=>n.kind==='source'||n.kind==='switch')) {
+    const button=document.createElement('button');
+    button.type='button';
+    const ready=available(pack,state,node);
+    button.disabled=mode!=='explore'||!ready;
+    const on=systemsState.enabled.includes(node.id);
+    button.textContent=(on?'● ':'○ ')+node.label+(ready?'': ' · Help the neighbor first');
+    button.setAttribute('aria-pressed',String(on));
+    button.addEventListener('click',()=>toggleInfrastructure(node.id));
+    $('power-switches').append(button);
+  }
+}
+function toggleInfrastructure(id){
+  if(mode!=='explore' || inside)return;
+  const result=toggleSystemNode(pack,systemsPack,state,systemsState,id);
+  if(!result.ok)return notify(result.reason);
+  systemsState=result.state;
+  saveSystems();
+  audio.tone(result.status.gateOpen?880:660,.045,.28);
+  refreshUI();
+  notify(result.reason);
 }
 function refreshUI() {
   const p=progress(pack,state);
@@ -448,6 +505,7 @@ function refreshUI() {
   }
   $('mode-label').textContent=inside ? (inside==='cafe'?'Sunbeam Café · Inside':'Bluebell House · Inside')
     : mode==='workshop' ? 'Workshop · Assemble' : 'Neighborhood · Explore';
+  refreshSystemControls();
   $('mode-help').textContent=mode==='workshop'
     ? 'Choose a part. Aim at a highlighted tile, turn with R, and click to snap it into place.'
     : inside
@@ -479,7 +537,7 @@ function teleportTo(root,worldPoint) {
   const viewer=new THREE.Vector3();
   renderer.xr.getCamera().getWorldPosition(viewer);
   const local=root.worldToLocal(worldPoint.clone());
-  if(!canTeleport(pack,state,local,inside)){
+  if(!canTeleport(pack,state,local,inside,currentCircuit.gateOpen)){
     notify('Choose a clear patch of ground to teleport.');
     return;
   }
@@ -499,7 +557,7 @@ function snapTurnInPlace(amount) {
 }
 function handleRay(ray, controllerUse=false) {
   const targets=inside ? [interiorRoot]
-    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot,speechRoot]:[]),
+    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot,speechRoot,systemsVisual.root]:[]),
        ...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
@@ -514,6 +572,7 @@ function handleRay(ray, controllerUse=false) {
     if(action?.action==='explore')return setMode('explore');
     if(action?.action==='workshop')return setMode('workshop');
     if(action?.action==='talk')return speak(action.data);
+    if(action?.action==='system')return toggleInfrastructure(action.data);
     if(action?.action==='close-dialogue')return closeDialogue();
     if(action?.action==='interior')return enterInterior(action.data);
     if(action?.action==='exit-interior')return leaveInterior();
@@ -618,6 +677,7 @@ $('toggle-hints').addEventListener('change',event=>{hintsOn=event.target.checked
 $('reset').addEventListener('click',()=>{
   if(!window.confirm('Reset this neighborhood? Your assembled pieces and local quests will be cleared.'))return;
   state=blankSession(pack);save();
+  systemsState=blankCitySystems(pack);saveSystems();
   selected=nextUnplaced(pack,state)?.id||null;
   rotation=0;hovered=null;
   refreshPlaced();setMode('workshop');
@@ -641,7 +701,7 @@ function desktopExploreStep(delta) {
   if(heldKeys.has('KeyA'))motion.sub(side);
   if(motion.lengthSq()) {
     motion.normalize().multiplyScalar(Math.min(delta,.05)*4);
-    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside);
+    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside,currentCircuit.gateOpen);
     camera.position.x=next.x;
     camera.position.z=next.z;
   }
@@ -655,6 +715,8 @@ function animate() {
   const facing=renderer.xr.isPresenting?renderer.xr.getCamera().quaternion:camera.quaternion;
   for(const label of lifeLabels)label.quaternion.copy(facing);
   for(const label of speechRoot.children)label.quaternion.copy(facing);
+  for(const label of systemsVisual.labels)label.quaternion.copy(facing);
+  systemsVisual.tick(delta);
   renderer.render(scene,camera);
 }
 refreshPlaced();positionStage();refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
