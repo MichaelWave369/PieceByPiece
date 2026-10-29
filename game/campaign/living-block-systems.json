@@ -1,0 +1,83 @@
+{
+  "format": "piecebypiece.systems.v1",
+  "packId": "the-living-block",
+  "name": "Lantern Grid",
+  "description": "Restore the neighborhood's gentle power grid so the public overlook opens to everyone.",
+  "nodes": [
+    {
+      "id": "cafe-power",
+      "label": "Start Café Generator",
+      "kind": "source",
+      "buildingId": "cafe",
+      "requiresMission": "visit-cafe",
+      "position": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "id": "house-relay",
+      "label": "Route House Relay",
+      "kind": "switch",
+      "buildingId": "home",
+      "requiresMission": "inspect-home",
+      "position": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "id": "garden-relay",
+      "label": "Route Garden Relay",
+      "kind": "switch",
+      "buildingId": "garden",
+      "requiresMission": "visit-garden",
+      "position": {
+        "x": 3,
+        "y": 9
+      }
+    },
+    {
+      "id": "lanterns",
+      "label": "Lantern Walk",
+      "kind": "consumer",
+      "buildingId": "garden",
+      "position": {
+        "x": 6,
+        "y": 9
+      }
+    },
+    {
+      "id": "overlook",
+      "label": "Commons Overlook Gate",
+      "kind": "gate",
+      "buildingId": "garden",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "cafe-power",
+      "to": "house-relay",
+      "requiresPiece": "cafe-door"
+    },
+    {
+      "from": "house-relay",
+      "to": "garden-relay",
+      "requiresPiece": "home-door"
+    },
+    {
+      "from": "garden-relay",
+      "to": "lanterns",
+      "requiresPiece": "garden-lamp"
+    },
+    {
+      "from": "lanterns",
+      "to": "overlook",
+      "requiresPiece": "garden-bridge"
+    }
+  ]
+}
