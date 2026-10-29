@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MichaelWave369/PieceByPiece/blob/main/schemas/community-city.schema.json",
+  "title": "Piece by Piece: community city pack v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "metadata",
+    "city",
+    "buildings",
+    "pieces",
+    "missions",
+    "rights"
+  ],
+  "properties": {
+    "format": {
+      "const": "piecebypiece.city.v1"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "creator",
+        "description",
+        "difficulty",
+        "estimatedMinutes",
+        "tags"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "creator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "difficulty": {
+          "enum": [
+            "calm",
+            "gentle",
+            "thoughtful",
+            "intricate"
+          ]
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 240
+        },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{2,20}$"
+          }
+        }
+      }
+    },
+    "city": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "theme",
+        "grid",
+        "seed"
+      ],
+      "properties": {
+        "theme": {
+          "enum": [
+            "village",
+            "harbor",
+            "garden",
+            "industrial",
+            "neon"
+          ]
+        },
+        "grid": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 32
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 32
+            }
+          }
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      }
+    },
+    "buildings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "minLength": 2,
+            "maxLength": 64
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          }
+        }
+      }
+    },
+    "pieces": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "buildingId",
+          "prefab",
+          "target"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "minLength": 2,
+            "maxLength": 64
+          },
+          "buildingId": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "minLength": 2,
+            "maxLength": 64
+          },
+          "prefab": {
+            "enum": [
+              "foundation",
+              "wall",
+              "door",
+              "window",
+              "roof",
+              "stairs",
+              "bridge",
+              "road",
+              "lamp",
+              "tower",
+              "garden",
+              "dock"
+            ]
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "x",
+              "y",
+              "z",
+              "rotation"
+            ],
+            "properties": {
+              "x": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              },
+              "y": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              },
+              "z": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 8
+              },
+              "rotation": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  90,
+                  180,
+                  270
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "missions": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "kind",
+          "buildingId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "minLength": 2,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "kind": {
+            "enum": [
+              "visit-building",
+              "inspect-building"
+            ]
+          },
+          "buildingId": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "minLength": 2,
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "license",
+        "confirmed"
+      ],
+      "properties": {
+        "license": {
+          "enum": [
+            "CC0-1.0",
+            "CC-BY-4.0"
+          ]
+        },
+        "confirmed": {
+          "const": true
+        }
+      }
+    }
+  }
+}

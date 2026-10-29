@@ -1,0 +1,15 @@
+{
+  "name": "piece-by-piece",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Peaceful XR architectural puzzle adventure with optional asynchronous city pack sharing",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "validate:packs": "node scripts/validate-community.mjs community/packs",
+    "check": "npm test && npm run validate:packs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

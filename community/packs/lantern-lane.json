@@ -1,0 +1,119 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "lantern-lane",
+    "title": "Lantern Lane",
+    "creator": "Example Architect",
+    "description": "Reassemble a cozy café and a pocket garden, then explore the completed street.",
+    "difficulty": "gentle",
+    "estimatedMinutes": 10,
+    "tags": [
+      "cozy",
+      "starter"
+    ]
+  },
+  "city": {
+    "theme": "village",
+    "grid": {
+      "width": 12,
+      "height": 12
+    },
+    "seed": 369
+  },
+  "buildings": [
+    {
+      "id": "cafe",
+      "name": "Lantern Café"
+    },
+    {
+      "id": "garden",
+      "name": "Moonflower Garden"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "cafe-base",
+      "buildingId": "cafe",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "cafe-door",
+      "buildingId": "cafe",
+      "prefab": "door",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "cafe-wall",
+      "buildingId": "cafe",
+      "prefab": "wall",
+      "target": {
+        "x": 4,
+        "y": 4,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "cafe-roof",
+      "buildingId": "cafe",
+      "prefab": "roof",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-bed",
+      "buildingId": "garden",
+      "prefab": "garden",
+      "target": {
+        "x": 7,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-lamp",
+      "buildingId": "garden",
+      "prefab": "lamp",
+      "target": {
+        "x": 7,
+        "y": 5,
+        "z": 0,
+        "rotation": 180
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "say-hello",
+      "title": "Visit Lantern Café",
+      "kind": "visit-building",
+      "buildingId": "cafe"
+    },
+    {
+      "id": "find-moonflowers",
+      "title": "Inspect Moonflower Garden",
+      "kind": "inspect-building",
+      "buildingId": "garden"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}
