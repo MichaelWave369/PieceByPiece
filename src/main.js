@@ -5,6 +5,10 @@ import pack from '../game/campaign/the-living-block.json';
 import { blankSession, restoreSession, nextUnplaced, tryPlace, progress, buildingComplete, completeMission } from './core/puzzle.mjs';
 import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './render/prefabs.js';
 import { makeCompletedBuilding } from './render/buildings.js';
+import { NEIGHBORS, getNeighbor, nextErrand, carrying, talkToNeighbor } from './core/neighborhood.mjs';
+import { anchorOf, moveWalkable, canTeleport } from './core/navigation.mjs';
+import { createNeighbor, createDoorMarker, createInterior, createSpeechPanel } from './render/life.js';
+import { NeighborhoodAudio } from './audio/ambient.js';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -18,6 +22,9 @@ let hovered = null;
 let hintsOn = true;
 let xrActive = false;
 let shelfPage = 0;
+let inside = null;
+let activeDialogue = null;
+const audio = new NeighborhoodAudio();
 const heldKeys = new Set();
 const timer = new THREE.Clock();
 
@@ -72,8 +79,14 @@ scene.add(cityRoot);
 const placedRoot = new THREE.Group();
 const completedRoot = new THREE.Group();
 const hintRoot = new THREE.Group();
-const missionRoot = new THREE.Group();
-cityRoot.add(placedRoot,completedRoot,hintRoot,missionRoot);
+const peopleRoot = new THREE.Group();
+const doorsRoot = new THREE.Group();
+const speechRoot = new THREE.Group();
+const interiorRoot = new THREE.Group();
+const lifeLabels = [];
+interiorRoot.visible=false;
+scene.add(interiorRoot);
+cityRoot.add(placedRoot,completedRoot,hintRoot,peopleRoot,doorsRoot,speechRoot);
 
 const base = new THREE.Mesh(
   new THREE.BoxGeometry(CITY.width*CELL+.6,.25,CITY.height*CELL+.6),
@@ -212,6 +225,7 @@ function placeAt(cell) {
   if(result.cityCompleted)notify('THE BLOCK IS ALIVE! Enter your newly built neighborhood.');
   else if(result.buildingCompleted)notify(pack.buildings.find(b=>b.id===piece.buildingId).name+' is complete!');
   else notify('Perfect fit! The city is coming together.');
+  audio.tone(result.buildingCompleted?740:550,.045,.25);
   selected=nextUnplaced(pack,state)?.id || null;
   rotation=0;hovered=null;
   refreshHint();refreshGhost();refreshUI();refreshShelf();
@@ -239,6 +253,7 @@ function refreshShelf() {
   }
   shelfButton('NEXT PIECES',0,-.85,'page',null);
   shelfButton('ROTATE 90°',0,-1.04,'rotate',null);
+  shelfButton(audio.enabled?'SOUND OFF':'SOUND ON',0,-1.42,'sound',null);
   if(progress(pack,state).complete)shelfButton('ENTER CITY',0,-1.23,'explore',null);
 }
 const returnSign=new THREE.Group();
@@ -248,47 +263,108 @@ returnSign.add(returnButton);
 returnSign.position.set(0,2.4,-1.6);
 cityRoot.add(returnSign);
 
-const missionIcons=[];
-function refreshMissions() {
-  discard(missionRoot);
-  missionIcons.length=0;
-  if(mode!=='explore')return;
-  for(const mission of pack.missions) {
-    if(state.missions.includes(mission.id) || !buildingComplete(pack,state,mission.buildingId))continue;
-    const piece=pack.pieces.find(p=>p.buildingId===mission.buildingId);
-    const spot=tilePosition(CITY,piece.target);
-    const root=new THREE.Group();
-    root.position.set(spot.x,mission.buildingId==='garden'?2.4:3.65,spot.z);
-    const orb=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12),
-      new THREE.MeshStandardMaterial({color:0xffcf83,emissive:0xa36e2a,emissiveIntensity:.3}));
-    orb.userData={action:'mission',data:mission.id};
-    root.add(orb);
-    const label=textPlane(mission.title,2.9,.38);
-    label.position.y=.48;
-    label.userData={action:'mission',data:mission.id};
-    root.add(label);
-    missionRoot.add(root);
-    missionIcons.push({root,label});
+function refreshNeighborhood() {
+  discard(peopleRoot);
+  discard(doorsRoot);
+  discard(speechRoot);
+  lifeLabels.length=0;
+  if(mode!=='explore' || inside)return;
+  for(const neighbor of NEIGHBORS){
+    if(!buildingComplete(pack,state,neighbor.buildingId))continue;
+    const anchor=anchorOf(pack,neighbor.buildingId);
+    if(!anchor)continue;
+    const avatar=createNeighbor(neighbor);
+    avatar.group.position.set(anchor.x-.96,.18,anchor.z+1.96);
+    peopleRoot.add(avatar.group);
+    lifeLabels.push(avatar.label);
+    if(neighbor.buildingId==='garden')continue;
+    const marker=createDoorMarker(neighbor.buildingId,neighbor.buildingId==='cafe'?'CAFÉ':'HOME');
+    marker.root.position.set(anchor.x+.45,.14,anchor.z+1.55);
+    doorsRoot.add(marker.root);
+    lifeLabels.push(marker.sign);
   }
 }
-function finishMission(id) {
-  const result=completeMission(pack,state,id);
-  if(!result.ok)return;
-  state=result.session;save();
-  const all=progress(pack,state).missions===pack.missions.length;
-  notify(all?'Every neighbor helped. The Living Block is restored!':'Neighbor helped! Explore the other glowing markers.');
-  refreshMissions();refreshUI();
+function presentDialogue(who, text, id=null) {
+  activeDialogue={who,text,id};
+  $('dialogue-panel').hidden=false;
+  $('speaker').textContent=who;
+  $('dialogue-text').textContent=text;
+  discard(speechRoot);
+  if(mode==='explore' && !inside && id){
+    const neighbor=getNeighbor(id);
+    const anchor=neighbor && anchorOf(pack,neighbor.buildingId);
+    if(anchor) {
+      const line=createSpeechPanel(who,text);
+      line.position.set(anchor.x,3.02,anchor.z+2.1);
+      speechRoot.add(line);
+    }
+  }
+}
+function closeDialogue(){
+  activeDialogue=null;
+  $('dialogue-panel').hidden=true;
+  discard(speechRoot);
+}
+function speak(id){
+  if(mode!=='explore')return;
+  if(inside)leaveInterior();
+  const outcome=talkToNeighbor(pack,state,id);
+  if(outcome.changed){
+    state=outcome.session;
+    save();
+    audio.tone(783.99,.055,.35);
+    if(outcome.completedAll)notify('The Living Block is restored! All three neighbors have been helped.');
+    else notify(nextErrand(state));
+    refreshNeighborhood();
+  }
+  presentDialogue(outcome.who||'The neighborhood',outcome.text,id);
+  refreshUI();
+}
+function enterInterior(id){
+  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,state,id))return;
+  closeDialogue();
+  inside=id;
+  discard(interiorRoot);
+  const room=createInterior(id);
+  interiorRoot.add(room.group);
+  cityRoot.visible=false;
+  interiorRoot.visible=true;
+  if(xrActive)interiorRoot.position.set(0,0,-2.3);
+  else {
+    interiorRoot.position.set(0,0,0);
+    camera.position.set(0,1.65,1.9);
+    camera.rotation.set(0,0,0);
+  }
+  refreshUI();
+  notify(id==='cafe'?'Inside Sunbeam Café. A cozy place to rest.':'Inside Bluebell House. Someone has made a beautiful home.');
+}
+function leaveInterior(){
+  if(!inside)return;
+  closeDialogue();
+  inside=null;
+  interiorRoot.visible=false;
+  discard(interiorRoot);
+  cityRoot.visible=true;
+  positionStage();
+  refreshNeighborhood();
+  refreshUI();
+  notify('Back on the street. There is no rush.');
 }
 function setMode(value) {
   if(value==='explore' && !progress(pack,state).complete) {
     return notify('Complete all 12 pieces before entering the city.');
   }
   mode=value;
+  inside=null;
+  closeDialogue();
+  interiorRoot.visible=false;
+  discard(interiorRoot);
+  cityRoot.visible=true;
   hovered=null;
   positionStage();
-  refreshHint();refreshGhost();refreshMissions();refreshUI();refreshShelf();
+  refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
   notify(value==='explore'
-    ? 'Welcome to The Living Block. Visit the glowing quest markers!'
+    ? 'Welcome to The Living Block. Meet Celia, Jules, and Moss.'
     : 'Back to the workshop. No timers, no pressure.');
 }
 function positionStage() {
@@ -314,7 +390,7 @@ function positionStage() {
   }
   workbench.visible=xrActive && mode==='workshop';
   ground.visible=!xrActive && mode==='workshop';
-  returnSign.visible=mode==='explore';
+  returnSign.visible=mode==='explore' && !inside;
 }
 function refreshUI() {
   const p=progress(pack,state);
@@ -350,18 +426,33 @@ function refreshUI() {
   $('rotate').disabled=mode!=='workshop' || !selected;
   $('enter-city').disabled=!p.complete || mode==='explore';
   $('return-workshop').hidden=mode==='workshop';
+  $('exit-interior').hidden=mode!=='explore' || !inside;
   $('enter-city').hidden=mode==='explore';
   $('workshop-panel').hidden=mode!=='workshop';
   $('quest-panel').hidden=mode!=='explore';
   $('quests').replaceChildren();
-  for(const mission of pack.missions) {
+  $('neighbors').replaceChildren();
+  $('next-errand').textContent=nextErrand(state);
+  $('carrying').textContent=carrying(state);
+  for(const neighbor of NEIGHBORS){
     const item=document.createElement('li');
-    item.textContent=(state.missions.includes(mission.id)?'✓ ':'◇ ')+mission.title;
+    const done=state.missions.includes(neighbor.missionId);
+    item.textContent=(done?'✓ ':'◇ ')+neighbor.name+' · '+neighbor.role;
     $('quests').append(item);
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent='Talk to '+neighbor.name+(done?' ✓':'');
+    button.disabled=mode!=='explore' || !buildingComplete(pack,state,neighbor.buildingId);
+    button.addEventListener('click',()=>speak(neighbor.id));
+    $('neighbors').append(button);
   }
+  $('mode-label').textContent=inside ? (inside==='cafe'?'Sunbeam Café · Inside':'Bluebell House · Inside')
+    : mode==='workshop' ? 'Workshop · Assemble' : 'Neighborhood · Explore';
   $('mode-help').textContent=mode==='workshop'
     ? 'Choose a part. Aim at a highlighted tile, turn with R, and click to snap it into place.'
-    : 'Right-drag to look, WASD to walk, and click a glowing quest marker. In VR, point and trigger to teleport.';
+    : inside
+      ? 'Look around this building. Select the exit sign or use Return to street.'
+      : 'Meet neighbors, click the entrance signs, or explore with WASD. In VR, point and trigger to teleport.';
 }
 
 const raycaster=new THREE.Raycaster();
@@ -384,28 +475,60 @@ function hitAction(hit) {
   while(obj && !obj.userData.action)obj=obj.parent;
   return obj?.userData || null;
 }
+function teleportTo(root,worldPoint) {
+  const viewer=new THREE.Vector3();
+  renderer.xr.getCamera().getWorldPosition(viewer);
+  const local=root.worldToLocal(worldPoint.clone());
+  if(!canTeleport(pack,state,local,inside)){
+    notify('Choose a clear patch of ground to teleport.');
+    return;
+  }
+  root.position.x+=viewer.x-worldPoint.x;
+  root.position.z+=viewer.z-worldPoint.z;
+  audio.tone(440,.025,.14);
+}
+function snapTurnInPlace(amount) {
+  const root=inside?interiorRoot:cityRoot;
+  const pivot=new THREE.Vector3();
+  renderer.xr.getCamera().getWorldPosition(pivot);
+  const horizontal=new THREE.Vector3(root.position.x-pivot.x,0,root.position.z-pivot.z);
+  horizontal.applyAxisAngle(new THREE.Vector3(0,1,0),amount);
+  root.position.x=pivot.x+horizontal.x;
+  root.position.z=pivot.z+horizontal.z;
+  root.rotation.y+=amount;
+}
 function handleRay(ray, controllerUse=false) {
-  const targets = [boardPick,...(mode==='explore'?[returnSign,missionRoot]:[]),...(xrActive?[shelf]:[])];
+  const targets=inside ? [interiorRoot]
+    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot,speechRoot]:[]),
+       ...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
     const action=hitAction(hit);
     if(action?.action==='piece')return choose(action.data);
     if(action?.action==='rotate')return turnPiece();
-    if(action?.action==='page'){shelfPage++;if(shelfPage*5>=pack.pieces.filter(p=>!state.placed.includes(p.id)).length)shelfPage=0;return refreshShelf();}
+    if(action?.action==='page') {
+      shelfPage++;
+      if(shelfPage*5>=pack.pieces.filter(p=>!state.placed.includes(p.id)).length)shelfPage=0;
+      return refreshShelf();
+    }
     if(action?.action==='explore')return setMode('explore');
     if(action?.action==='workshop')return setMode('workshop');
-    if(action?.action==='mission')return finishMission(action.data);
+    if(action?.action==='talk')return speak(action.data);
+    if(action?.action==='close-dialogue')return closeDialogue();
+    if(action?.action==='interior')return enterInterior(action.data);
+    if(action?.action==='exit-interior')return leaveInterior();
+    if(action?.action==='sound')return toggleAudio();
+    if(inside) {
+      if(xrActive && controllerUse && Math.abs(hit.point.y)<.22)
+        return teleportTo(interiorRoot,hit.point);
+      return;
+    }
     if(hit.object===boardPick) {
       if(mode==='workshop') {
         const local=cityRoot.worldToLocal(hit.point.clone());
         return placeAt(gridCoordinate(CITY,local,getSelected()?.target.z||0,rotation));
       }
-      if(xrActive && controllerUse) {
-        // Move the world, not the viewer's tracked camera. Comfortable, instant teleport.
-        cityRoot.position.x-=hit.point.x;
-        cityRoot.position.z-=hit.point.z;
-        return notify('Teleported. Point at a glowing marker to help a neighbor.');
-      }
+      if(xrActive && controllerUse)return teleportTo(cityRoot,hit.point);
       return;
     }
   }
@@ -434,7 +557,8 @@ window.addEventListener('keydown',event=>{
   if(['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
   heldKeys.add(event.code);
   if(event.code==='KeyR' && !event.repeat)turnPiece();
-  if(event.code==='Escape' && mode==='explore')setMode('workshop');
+  if(event.code==='Escape' && inside)leaveInterior();
+  else if(event.code==='Escape' && mode==='explore')setMode('workshop');
 });
 window.addEventListener('keyup',event=>heldKeys.delete(event.code));
 window.addEventListener('blur',()=>heldKeys.clear());
@@ -449,8 +573,8 @@ for(let i=0;i<2;i++) {
   controller.addEventListener('squeezestart',()=>{
     if(mode==='workshop')turnPiece();
     else {
-      cityRoot.rotation.y+=Math.PI/4;
-      notify('Turned 45°. Select the ground to teleport.');
+      snapTurnInPlace(Math.PI/4);
+      notify('Turned 45°. Select clear ground to teleport.');
     }
   });
   const grip=renderer.xr.getControllerGrip(i);
@@ -475,6 +599,21 @@ renderer.xr.addEventListener('sessionend',()=>{
 $('rotate').addEventListener('click',turnPiece);
 $('enter-city').addEventListener('click',()=>setMode('explore'));
 $('return-workshop').addEventListener('click',()=>setMode('workshop'));
+$('exit-interior').addEventListener('click',leaveInterior);
+$('close-dialogue').addEventListener('click',closeDialogue);
+async function toggleAudio(){
+  const target=!audio.enabled;
+  try { await audio.setEnabled(target); }
+  catch(error) {notify('Audio unavailable: '+error.message);}
+  $('sound-enabled').checked=audio.enabled;
+  refreshShelf();
+}
+$('sound-enabled').addEventListener('change',async event=>{
+  try { await audio.setEnabled(event.target.checked); }
+  catch(error){notify('Audio unavailable: '+error.message);}
+  $('sound-enabled').checked=audio.enabled;
+  refreshShelf();
+});
 $('toggle-hints').addEventListener('change',event=>{hintsOn=event.target.checked;refreshHint();});
 $('reset').addEventListener('click',()=>{
   if(!window.confirm('Reset this neighborhood? Your assembled pieces and local quests will be cleared.'))return;
@@ -502,9 +641,9 @@ function desktopExploreStep(delta) {
   if(heldKeys.has('KeyA'))motion.sub(side);
   if(motion.lengthSq()) {
     motion.normalize().multiplyScalar(Math.min(delta,.05)*4);
-    camera.position.add(motion);
-    camera.position.x=THREE.MathUtils.clamp(camera.position.x,-CITY.width*CELL/2+.3,CITY.width*CELL/2-.3);
-    camera.position.z=THREE.MathUtils.clamp(camera.position.z,-CITY.height*CELL/2+.3,CITY.height*CELL/2-.3);
+    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside);
+    camera.position.x=next.x;
+    camera.position.z=next.z;
   }
 }
 function animate() {
@@ -512,12 +651,12 @@ function animate() {
   if(!xrActive && mode==='workshop')controls.update();
   desktopExploreStep(delta);
   if(xrActive && mode==='workshop')updateGhostFromRay(rayFromController(xrControllers[0]));
-  for(const marker of missionIcons) {
-    marker.label.quaternion.copy(renderer.xr.isPresenting?renderer.xr.getCamera().quaternion:camera.quaternion);
-    marker.root.children[0].rotation.y+=delta;
-  }
+  audio.tick(delta,mode==='explore');
+  const facing=renderer.xr.isPresenting?renderer.xr.getCamera().quaternion:camera.quaternion;
+  for(const label of lifeLabels)label.quaternion.copy(facing);
+  for(const label of speechRoot.children)label.quaternion.copy(facing);
   renderer.render(scene,camera);
 }
-refreshPlaced();positionStage();refreshHint();refreshGhost();refreshMissions();refreshUI();refreshShelf();
+refreshPlaced();positionStage();refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
 notify('Welcome to the workshop. Assemble the first block, one piece at a time.');
 renderer.setAnimationLoop(animate);
