@@ -5,6 +5,10 @@ import pack from '../game/campaign/the-living-block.json';
 import { blankSession, restoreSession, nextUnplaced, tryPlace, progress, buildingComplete, completeMission } from './core/puzzle.mjs';
 import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './render/prefabs.js';
 import { makeCompletedBuilding } from './render/buildings.js';
+import { NEIGHBORS, getNeighbor, nextErrand, carrying, talkToNeighbor } from './core/neighborhood.mjs';
+import { anchorOf, moveWalkable, canTeleport } from './core/navigation.mjs';
+import { createNeighbor, createDoorMarker, createInterior } from './render/life.js';
+import { NeighborhoodAudio } from './audio/ambient.js';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -18,6 +22,9 @@ let hovered = null;
 let hintsOn = true;
 let xrActive = false;
 let shelfPage = 0;
+let inside = null;
+let activeDialogue = null;
+const audio = new NeighborhoodAudio();
 const heldKeys = new Set();
 const timer = new THREE.Clock();
 
@@ -72,8 +79,14 @@ scene.add(cityRoot);
 const placedRoot = new THREE.Group();
 const completedRoot = new THREE.Group();
 const hintRoot = new THREE.Group();
-const missionRoot = new THREE.Group();
-cityRoot.add(placedRoot,completedRoot,hintRoot,missionRoot);
+const peopleRoot = new THREE.Group();
+const doorsRoot = new THREE.Group();
+const speechRoot = new THREE.Group();
+const interiorRoot = new THREE.Group();
+const lifeLabels = [];
+interiorRoot.visible=false;
+scene.add(interiorRoot);
+cityRoot.add(placedRoot,completedRoot,hintRoot,peopleRoot,doorsRoot,speechRoot);
 
 const base = new THREE.Mesh(
   new THREE.BoxGeometry(CITY.width*CELL+.6,.25,CITY.height*CELL+.6),
@@ -248,47 +261,109 @@ returnSign.add(returnButton);
 returnSign.position.set(0,2.4,-1.6);
 cityRoot.add(returnSign);
 
-const missionIcons=[];
-function refreshMissions() {
-  discard(missionRoot);
-  missionIcons.length=0;
-  if(mode!=='explore')return;
-  for(const mission of pack.missions) {
-    if(state.missions.includes(mission.id) || !buildingComplete(pack,state,mission.buildingId))continue;
-    const piece=pack.pieces.find(p=>p.buildingId===mission.buildingId);
-    const spot=tilePosition(CITY,piece.target);
-    const root=new THREE.Group();
-    root.position.set(spot.x,mission.buildingId==='garden'?2.4:3.65,spot.z);
-    const orb=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12),
-      new THREE.MeshStandardMaterial({color:0xffcf83,emissive:0xa36e2a,emissiveIntensity:.3}));
-    orb.userData={action:'mission',data:mission.id};
-    root.add(orb);
-    const label=textPlane(mission.title,2.9,.38);
-    label.position.y=.48;
-    label.userData={action:'mission',data:mission.id};
-    root.add(label);
-    missionRoot.add(root);
-    missionIcons.push({root,label});
+function refreshNeighborhood() {
+  discard(peopleRoot);
+  discard(doorsRoot);
+  discard(speechRoot);
+  lifeLabels.length=0;
+  if(mode!=='explore' || inside)return;
+  for(const neighbor of NEIGHBORS){
+    if(!buildingComplete(pack,state,neighbor.buildingId))continue;
+    const anchor=anchorOf(pack,neighbor.buildingId);
+    if(!anchor)continue;
+    const avatar=createNeighbor(neighbor);
+    avatar.group.position.set(anchor.x-.96,.18,anchor.z+1.96);
+    peopleRoot.add(avatar.group);
+    lifeLabels.push(avatar.label);
+    if(neighbor.buildingId==='garden')continue;
+    const marker=createDoorMarker(neighbor.buildingId,neighbor.buildingId==='cafe'?'CAFÉ':'HOME');
+    marker.root.position.set(anchor.x+.45,.14,anchor.z+1.55);
+    doorsRoot.add(marker.root);
+    lifeLabels.push(marker.sign);
   }
 }
-function finishMission(id) {
-  const result=completeMission(pack,state,id);
-  if(!result.ok)return;
-  state=result.session;save();
-  const all=progress(pack,state).missions===pack.missions.length;
-  notify(all?'Every neighbor helped. The Living Block is restored!':'Neighbor helped! Explore the other glowing markers.');
-  refreshMissions();refreshUI();
+function presentDialogue(who, text, id=null) {
+  activeDialogue={who,text,id};
+  $('dialogue-panel').hidden=false;
+  $('speaker').textContent=who;
+  $('dialogue-text').textContent=text;
+  discard(speechRoot);
+  if(mode==='explore' && !inside && id){
+    const neighbor=getNeighbor(id);
+    const anchor=neighbor && anchorOf(pack,neighbor.buildingId);
+    if(anchor) {
+      const line=textPlane(text.length>74?text.slice(0,71)+'…':text,3.9,.36,'#243f40','#ffedce');
+      line.position.set(anchor.x,3.25,anchor.z+2.1);
+      speechRoot.add(line);
+      lifeLabels.push(line);
+    }
+  }
+}
+function closeDialogue(){
+  activeDialogue=null;
+  $('dialogue-panel').hidden=true;
+  discard(speechRoot);
+}
+function speak(id){
+  if(mode!=='explore')return;
+  if(inside)leaveInterior();
+  const outcome=talkToNeighbor(pack,state,id);
+  if(outcome.changed){
+    state=outcome.session;
+    save();
+    audio.tone(783.99,.055,.35);
+    if(outcome.completedAll)notify('The Living Block is restored! All three neighbors have been helped.');
+    else notify(nextErrand(state));
+    refreshNeighborhood();
+  }
+  presentDialogue(outcome.who||'The neighborhood',outcome.text,id);
+  refreshUI();
+}
+function enterInterior(id){
+  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,state,id))return;
+  closeDialogue();
+  inside=id;
+  discard(interiorRoot);
+  const room=createInterior(id);
+  interiorRoot.add(room.group);
+  cityRoot.visible=false;
+  interiorRoot.visible=true;
+  if(xrActive)interiorRoot.position.set(0,0,-2.3);
+  else {
+    interiorRoot.position.set(0,0,0);
+    camera.position.set(0,1.65,1.9);
+    camera.rotation.set(0,0,0);
+  }
+  refreshUI();
+  notify(id==='cafe'?'Inside Sunbeam Café. A cozy place to rest.':'Inside Bluebell House. Someone has made a beautiful home.');
+}
+function leaveInterior(){
+  if(!inside)return;
+  closeDialogue();
+  inside=null;
+  interiorRoot.visible=false;
+  discard(interiorRoot);
+  cityRoot.visible=true;
+  positionStage();
+  refreshNeighborhood();
+  refreshUI();
+  notify('Back on the street. There is no rush.');
 }
 function setMode(value) {
   if(value==='explore' && !progress(pack,state).complete) {
     return notify('Complete all 12 pieces before entering the city.');
   }
   mode=value;
+  inside=null;
+  closeDialogue();
+  interiorRoot.visible=false;
+  discard(interiorRoot);
+  cityRoot.visible=true;
   hovered=null;
   positionStage();
-  refreshHint();refreshGhost();refreshMissions();refreshUI();refreshShelf();
+  refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
   notify(value==='explore'
-    ? 'Welcome to The Living Block. Visit the glowing quest markers!'
+    ? 'Welcome to The Living Block. Meet Celia, Jules, and Moss.'
     : 'Back to the workshop. No timers, no pressure.');
 }
 function positionStage() {
@@ -314,7 +389,7 @@ function positionStage() {
   }
   workbench.visible=xrActive && mode==='workshop';
   ground.visible=!xrActive && mode==='workshop';
-  returnSign.visible=mode==='explore';
+  returnSign.visible=mode==='explore' && !inside;
 }
 function refreshUI() {
   const p=progress(pack,state);
