@@ -107,7 +107,7 @@ export function createInterior(id){
   const header=textPlane(cafe?'SUNBEAM CAFÉ · INSIDE':'BLUEBELL HOUSE · INSIDE',3.0,.42);
   header.position.set(0,2.5,-2.61);group.add(header);
   const exitSign=textPlane('← RETURN TO THE STREET',2.35,.4,'#415b4c','#ffedbe');
-  exitSign.position.set(0,1.6,2.45);
+  exitSign.position.set(0,2.2,1.1);
   exitSign.userData={action:'exit-interior'};
   group.add(exitSign);
   // Physical-looking doorway and interactive zone.
