@@ -14,5 +14,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test schema and curated packs
+      - name: Install renderer and bundler
+        run: npm install --no-audit --no-fund
+      - name: Test game rules, schema, and both campaign/community packs
         run: npm run check
+      - name: Bundle the playable 3D game
+        run: npm run build
+      - name: Archive browser build
+        uses: actions/upload-artifact@v4
+        with:
+          name: piece-by-piece-web
+          path: dist/
