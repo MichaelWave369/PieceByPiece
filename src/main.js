@@ -425,18 +425,33 @@ function refreshUI() {
   $('rotate').disabled=mode!=='workshop' || !selected;
   $('enter-city').disabled=!p.complete || mode==='explore';
   $('return-workshop').hidden=mode==='workshop';
+  $('exit-interior').hidden=mode!=='explore' || !inside;
   $('enter-city').hidden=mode==='explore';
   $('workshop-panel').hidden=mode!=='workshop';
   $('quest-panel').hidden=mode!=='explore';
   $('quests').replaceChildren();
-  for(const mission of pack.missions) {
+  $('neighbors').replaceChildren();
+  $('next-errand').textContent=nextErrand(state);
+  $('carrying').textContent=carrying(state);
+  for(const neighbor of NEIGHBORS){
     const item=document.createElement('li');
-    item.textContent=(state.missions.includes(mission.id)?'✓ ':'◇ ')+mission.title;
+    const done=state.missions.includes(neighbor.missionId);
+    item.textContent=(done?'✓ ':'◇ ')+neighbor.name+' · '+neighbor.role;
     $('quests').append(item);
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent='Talk to '+neighbor.name+(done?' ✓':'');
+    button.disabled=mode!=='explore' || !buildingComplete(pack,state,neighbor.buildingId);
+    button.addEventListener('click',()=>speak(neighbor.id));
+    $('neighbors').append(button);
   }
+  $('mode-label').textContent=inside ? (inside==='cafe'?'Sunbeam Café · Inside':'Bluebell House · Inside')
+    : mode==='workshop' ? 'Workshop · Assemble' : 'Neighborhood · Explore';
   $('mode-help').textContent=mode==='workshop'
     ? 'Choose a part. Aim at a highlighted tile, turn with R, and click to snap it into place.'
-    : 'Right-drag to look, WASD to walk, and click a glowing quest marker. In VR, point and trigger to teleport.';
+    : inside
+      ? 'Look around this building. Select the exit sign or use Return to street.'
+      : 'Meet neighbors, click the entrance signs, or explore with WASD. In VR, point and trigger to teleport.';
 }
 
 const raycaster=new THREE.Raycaster();
