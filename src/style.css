@@ -46,3 +46,27 @@ h1 em{font-weight:500;font-size:.5em;letter-spacing:0;vertical-align:12%;font-st
 [hidden]{display:none!important}
 @media (max-width:760px){.brand{top:14px;left:16px}.brand .eyebrow,.brand p,.footer{display:none}h1{font-size:27px}.panel{right:10px;top:55px;max-height:calc(100vh - 65px);width:min(280px,calc(100vw - 20px));padding:16px;border-radius:16px}.parts{max-height:104px}.panel .instructions{font-size:11px;margin-bottom:10px}.section-title{margin-top:10px}.building{padding:5px 0}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Rung 2: intimate, accessible conversational neighborhood UI */
+.errand{margin:0 0 12px;border-left:3px solid #edd6a3;padding:7px 10px;
+  background:#d0c69e15;color:#ffebc4;font-size:12px;line-height:1.5}
+.inventory{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-size:10px;
+  letter-spacing:.09em;color:#a9cabd;margin:8px 0}
+.inventory strong{font-size:11px;letter-spacing:normal;color:#e0f2d6;font-weight:600}
+.neighbor-actions{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:10px}
+.neighbor-actions button{border:1px solid #a1bcaf66;background:#f4e5c70c;
+  color:#fff0d4;border-radius:9px;padding:9px;text-align:left;font-size:11px}
+.neighbor-actions button:not(:disabled):hover,.neighbor-actions button:not(:disabled):focus-visible{
+  background:#f4e5c725;border-color:#d2d5af}
+.dialogue{padding:14px;background:#f7f1da13;border-radius:11px;
+  border:1px solid #f7e2af4c;line-height:1.5;margin:11px 0}
+.dialogue strong{display:block;color:#f2d8a9;font-size:12px;letter-spacing:.06em}
+.dialogue p{font-size:12px;line-height:1.6;color:#eff7e7;margin:8px 0}
+.dialogue button{background:transparent;border:1px solid #8cb7a9;border-radius:8px;
+  color:#d4f2e9;padding:7px 10px;font-size:11px}
+.dialogue button:hover{background:#ffffff18}
+.settings{display:flex;align-items:center;justify-content:space-between;gap:9px;
+  margin-top:14px;color:#c7d9cb;font-size:11px}
+.settings input{accent-color:#a4d0ac}
+.settings span{font-size:10px;color:#9cbbaf;text-align:right}
+button:focus-visible,input:focus-visible{outline:3px solid #e4cc93;outline-offset:3px}
