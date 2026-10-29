@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
-import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 import pack from '../game/campaign/the-living-block.json';
 import { blankSession, restoreSession, nextUnplaced, tryPlace, progress, buildingComplete, completeMission } from './core/puzzle.mjs';
 import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './render/prefabs.js';
@@ -62,7 +61,7 @@ controls.update();
 scene.add(new THREE.HemisphereLight(0xeafff4, 0x9d9e88, 2.5));
 const sun = new THREE.DirectionalLight(0xffedc1, 3.0);
 sun.position.set(-8,18,10);sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);
+sun.shadow.mapSize.set(1024,1024);
 sun.shadow.camera.left=-22;sun.shadow.camera.right=22;
 sun.shadow.camera.top=22;sun.shadow.camera.bottom=-22;
 scene.add(sun);
@@ -89,7 +88,7 @@ cityRoot.add(grass);
 // The board has a dedicated picking surface, not a mesh-based gameplay rule.
 const boardPick = new THREE.Mesh(
   new THREE.PlaneGeometry(CITY.width*CELL,CITY.height*CELL),
-  new THREE.MeshBasicMaterial({color:0xffffff,visible:false,side:THREE.DoubleSide})
+  new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide})
 );
 boardPick.rotation.x=-Math.PI/2;boardPick.position.y=.082;
 cityRoot.add(boardPick);
@@ -300,7 +299,7 @@ function positionStage() {
       controls.enabled=false;
       camera.position.set(0,1.75,6);
       camera.rotation.order='YXZ';
-      camera.rotation.set(0,Math.PI,0);
+      camera.rotation.set(0,0,0);
     }
   }
   workbench.visible=xrActive && mode==='workshop';
@@ -311,6 +310,7 @@ function refreshUI() {
   const p=progress(pack,state);
   $('piece-count').textContent=p.placed+' / '+p.total;
   $('fill').style.width=(100*p.placed/p.total)+'%';
+  document.querySelector('.progress').setAttribute('aria-valuenow',String(p.placed));
   $('mode-label').textContent=mode==='workshop'?'Workshop · Assemble':'Neighborhood · Explore';
   $('building-list').replaceChildren();
   for(const building of pack.buildings) {
@@ -429,7 +429,6 @@ window.addEventListener('keydown',event=>{
 window.addEventListener('keyup',event=>heldKeys.delete(event.code));
 window.addEventListener('blur',()=>heldKeys.clear());
 
-const controllerFactory=new XRControllerModelFactory();
 const xrControllers=[];
 for(let i=0;i<2;i++) {
   const controller=renderer.xr.getController(i);
@@ -445,7 +444,9 @@ for(let i=0;i<2;i++) {
     }
   });
   const grip=renderer.xr.getControllerGrip(i);
-  grip.add(controllerFactory.createControllerModel(grip));
+  const handle=new THREE.Mesh(new THREE.CylinderGeometry(.035,.04,.15,12),new THREE.MeshStandardMaterial({color:i?0x72baa8:0xd9a86c}));
+  handle.rotation.x=Math.PI/2;
+  grip.add(handle);
   scene.add(controller,grip);
   xrControllers.push(controller);
 }
