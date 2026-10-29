@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { blankSession,tryPlace,completeMission } from '../src/core/puzzle.mjs';
 import { blankCitySystems,restoreCitySystems,validateSystemDefinition,circuitStatus,toggleSystemNode } from '../src/core/city-systems.mjs';
+import { canTeleport,moveWalkable } from '../src/core/navigation.mjs';
 
 const pack=JSON.parse(readFileSync(new URL('../game/campaign/the-living-block.json',import.meta.url),'utf8'));
 const def=JSON.parse(readFileSync(new URL('../game/campaign/living-block-systems.json',import.meta.url),'utf8'));
@@ -78,4 +79,15 @@ test('unplaced road breaks the route even if switches are enabled in a forged sa
   assert.equal(status.gateOpen,false);
   assert.equal(status.lampsOn,false);
   assert.equal(status.powered.includes('garden-relay'),false);
+});
+
+test('overlook destination is blocked until a completed circuit opens the gate',()=>{
+  const s=completedStory();
+  const destination={x:4.7,z:2.7};
+  assert.equal(canTeleport(pack,s,destination,null,false),false);
+  assert.equal(canTeleport(pack,s,destination,null,true),true);
+  const movement=moveWalkable(pack,s,{x:2.8,z:2.7},{x:3,z:0},null,false);
+  assert.ok(movement.x<=3.5);
+  const after=moveWalkable(pack,s,{x:2.8,z:2.7},{x:3,z:0},null,true);
+  assert.ok(after.x>4.5);
 });
