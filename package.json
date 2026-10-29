@@ -1,15 +1,24 @@
 {
   "name": "piece-by-piece",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "Peaceful XR architectural puzzle adventure with optional asynchronous city pack sharing",
   "type": "module",
   "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
     "test": "node --test",
-    "validate:packs": "node scripts/validate-community.mjs community/packs",
+    "validate:packs": "node scripts/validate-community.mjs community/packs game/campaign",
     "check": "npm test && npm run validate:packs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
   }
 }
