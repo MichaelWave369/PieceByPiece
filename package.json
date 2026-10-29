@@ -11,7 +11,9 @@
     "test": "node --test",
     "validate:packs": "node scripts/validate-community.mjs community/packs game/campaign/the-living-block.json",
     "check": "npm test && npm run validate:packs",
-    "validate:systems": "node --test tests/city-systems.test.mjs"
+    "validate:systems": "node --test tests/city-systems.test.mjs",
+    "build:pages": "vite build --base=/PieceByPiece/",
+    "verify:pages": "node scripts/verify-pages.mjs"
   },
   "engines": {
     "node": ">=20.19.0"

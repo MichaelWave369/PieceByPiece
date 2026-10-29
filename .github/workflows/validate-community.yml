@@ -18,7 +18,11 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Test game rules, schema, and both campaign/community packs
         run: npm run check
-      - name: Bundle the playable 3D game
+      - name: Smoke-test deployable GitHub Pages base path
+        run: |
+          npm run build:pages
+          npm run verify:pages
+      - name: Bundle the portable standalone browser build
         run: npm run build
       - name: Archive browser build
         uses: actions/upload-artifact@v4
