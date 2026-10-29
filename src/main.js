@@ -4,6 +4,7 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 import pack from '../game/campaign/the-living-block.json';
 import { blankSession, restoreSession, nextUnplaced, tryPlace, progress, buildingComplete, completeMission } from './core/puzzle.mjs';
 import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './render/prefabs.js';
+import { makeCompletedBuilding } from './render/buildings.js';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -69,9 +70,10 @@ scene.add(sun);
 const cityRoot = new THREE.Group();
 scene.add(cityRoot);
 const placedRoot = new THREE.Group();
+const completedRoot = new THREE.Group();
 const hintRoot = new THREE.Group();
 const missionRoot = new THREE.Group();
-cityRoot.add(placedRoot,hintRoot,missionRoot);
+cityRoot.add(placedRoot,completedRoot,hintRoot,missionRoot);
 
 const base = new THREE.Mesh(
   new THREE.BoxGeometry(CITY.width*CELL+.6,.25,CITY.height*CELL+.6),
@@ -140,9 +142,17 @@ function discard(group) {
 function getSelected() { return pack.pieces.find(p=>p.id===selected) || null; }
 function refreshPlaced() {
   discard(placedRoot);
+  discard(completedRoot);
+  for(const building of pack.buildings) {
+    if(!buildingComplete(pack,state,building.id))continue;
+    const anchor=pack.pieces.find(piece=>piece.buildingId===building.id && piece.target.z===0);
+    const model=makeCompletedBuilding(building.id);
+    model.position.copy(tilePosition(CITY,anchor.target));
+    completedRoot.add(model);
+  }
   for(const piece of pack.pieces) {
-    if(!state.placed.includes(piece.id))continue;
-    const model = makePiece(piece);
+    if(!state.placed.includes(piece.id) || buildingComplete(pack,state,piece.buildingId))continue;
+    const model=makePiece(piece);
     model.position.copy(tilePosition(CITY,piece.target));
     model.rotation.y=THREE.MathUtils.degToRad(piece.target.rotation);
     placedRoot.add(model);
@@ -248,7 +258,7 @@ function refreshMissions() {
     const piece=pack.pieces.find(p=>p.buildingId===mission.buildingId);
     const spot=tilePosition(CITY,piece.target);
     const root=new THREE.Group();
-    root.position.set(spot.x,1.95,spot.z);
+    root.position.set(spot.x,mission.buildingId==='garden'?2.4:3.65,spot.z);
     const orb=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12),
       new THREE.MeshStandardMaterial({color:0xffcf83,emissive:0xa36e2a,emissiveIntensity:.3}));
     orb.userData={action:'mission',data:mission.id};
@@ -375,7 +385,7 @@ function hitAction(hit) {
   return obj?.userData || null;
 }
 function handleRay(ray, controllerUse=false) {
-  const targets = [boardPick,returnSign,missionRoot,...(xrActive?[shelf]:[])];
+  const targets = [boardPick,...(mode==='explore'?[returnSign,missionRoot]:[]),...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
     const action=hitAction(hit);
