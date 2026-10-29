@@ -297,7 +297,6 @@ function presentDialogue(who, text, id=null) {
       const line=textPlane(text.length>74?text.slice(0,71)+'…':text,3.9,.36,'#243f40','#ffedce');
       line.position.set(anchor.x,3.25,anchor.z+2.1);
       speechRoot.add(line);
-      lifeLabels.push(line);
     }
   }
 }
