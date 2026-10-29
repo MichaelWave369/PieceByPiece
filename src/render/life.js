@@ -116,3 +116,40 @@ export function createInterior(id){
   cube(group,0,2.0,2.65,2.15,.2,.2,COLOR.oak);
   return {group,exitSign};
 }
+
+/**
+ * Two-line-to-three-line world-space subtitle panel for headset players.
+ * The DOM conversation remains the authoritative accessible transcript.
+ */
+export function createSpeechPanel(who,text) {
+  const canvas=document.createElement('canvas');
+  canvas.width=1024;canvas.height=320;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#213d40';
+  ctx.beginPath();ctx.roundRect(6,6,1012,308,34);ctx.fill();
+  ctx.lineWidth=6;ctx.strokeStyle='#edcf9d';ctx.stroke();
+  ctx.textAlign='center';
+  ctx.fillStyle='#f3d399';ctx.font='bold 47px sans-serif';
+  ctx.fillText(who,512,70,900);
+  const words=text.split(/\s+/u);
+  const lines=[];let line='';
+  ctx.font='38px sans-serif';
+  for(const word of words) {
+    const probe=line?line+' '+word:word;
+    if(ctx.measureText(probe).width>895 && line){lines.push(line);line=word;}
+    else line=probe;
+  }
+  if(line)lines.push(line);
+  ctx.fillStyle='#fdf4e3';
+  for(const [i,part] of lines.slice(0,4).entries())
+    ctx.fillText(part,512,137+i*44,900);
+  ctx.font='25px sans-serif';ctx.fillStyle='#aacbc2';
+  ctx.fillText('Point and select to close',512,298);
+  const texture=new THREE.CanvasTexture(canvas);
+  texture.colorSpace=THREE.SRGBColorSpace;
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(3.9,1.22),
+    new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide,depthTest:false}));
+  mesh.userData={action:'close-dialogue'};
+  mesh.renderOrder=9;
+  return mesh;
+}
