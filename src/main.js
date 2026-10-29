@@ -474,28 +474,59 @@ function hitAction(hit) {
   while(obj && !obj.userData.action)obj=obj.parent;
   return obj?.userData || null;
 }
+function teleportTo(root,worldPoint) {
+  const viewer=new THREE.Vector3();
+  renderer.xr.getCamera().getWorldPosition(viewer);
+  const local=root.worldToLocal(worldPoint.clone());
+  if(!canTeleport(pack,state,local,inside)){
+    notify('Choose a clear patch of ground to teleport.');
+    return;
+  }
+  root.position.x+=viewer.x-worldPoint.x;
+  root.position.z+=viewer.z-worldPoint.z;
+  audio.tone(440,.025,.14);
+}
+function snapTurnInPlace(amount) {
+  const root=inside?interiorRoot:cityRoot;
+  const pivot=new THREE.Vector3();
+  renderer.xr.getCamera().getWorldPosition(pivot);
+  const horizontal=new THREE.Vector3(root.position.x-pivot.x,0,root.position.z-pivot.z);
+  horizontal.applyAxisAngle(new THREE.Vector3(0,1,0),amount);
+  root.position.x=pivot.x+horizontal.x;
+  root.position.z=pivot.z+horizontal.z;
+  root.rotation.y+=amount;
+}
 function handleRay(ray, controllerUse=false) {
-  const targets = [boardPick,...(mode==='explore'?[returnSign,missionRoot]:[]),...(xrActive?[shelf]:[])];
+  const targets=inside ? [interiorRoot]
+    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot]:[]),
+       ...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
     const action=hitAction(hit);
     if(action?.action==='piece')return choose(action.data);
     if(action?.action==='rotate')return turnPiece();
-    if(action?.action==='page'){shelfPage++;if(shelfPage*5>=pack.pieces.filter(p=>!state.placed.includes(p.id)).length)shelfPage=0;return refreshShelf();}
+    if(action?.action==='page') {
+      shelfPage++;
+      if(shelfPage*5>=pack.pieces.filter(p=>!state.placed.includes(p.id)).length)shelfPage=0;
+      return refreshShelf();
+    }
     if(action?.action==='explore')return setMode('explore');
     if(action?.action==='workshop')return setMode('workshop');
-    if(action?.action==='mission')return finishMission(action.data);
+    if(action?.action==='talk')return speak(action.data);
+    if(action?.action==='interior')return enterInterior(action.data);
+    if(action?.action==='exit-interior')return leaveInterior();
+    if(action?.action==='sound')return toggleAudio();
+    if(inside) {
+      if(xrActive && controllerUse && Math.abs(hit.point.y)<.22)
+        return teleportTo(interiorRoot,hit.point);
+      return;
+    }
     if(hit.object===boardPick) {
       if(mode==='workshop') {
         const local=cityRoot.worldToLocal(hit.point.clone());
         return placeAt(gridCoordinate(CITY,local,getSelected()?.target.z||0,rotation));
       }
-      if(xrActive && controllerUse) {
-        // Move the world, not the viewer's tracked camera. Comfortable, instant teleport.
-        cityRoot.position.x-=hit.point.x;
-        cityRoot.position.z-=hit.point.z;
-        return notify('Teleported. Point at a glowing marker to help a neighbor.');
-      }
+      if(xrActive && controllerUse)return teleportTo(cityRoot,hit.point);
       return;
     }
   }
