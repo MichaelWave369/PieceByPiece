@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#233f42" />
+  <meta name="description" content="Piece by Piece: a peaceful architectural puzzle world. Assemble a neighborhood, then step inside." />
+  <title>Piece by Piece | The Living Block</title>
+</head>
+<body>
+  <div id="stage" aria-label="Interactive 3D architectural puzzle"></div>
+  <main id="interface">
+    <header class="brand">
+      <span class="eyebrow">A tiny world made by you</span>
+      <h1>PIECE <em>BY</em> PIECE<span class="brand-mark">✦</span></h1>
+      <p>THE LIVING BLOCK <span class="dot">·</span> RUNG 1</p>
+    </header>
+    <aside class="panel" aria-label="Puzzle and neighborhood controls">
+      <div class="label-line"><span id="mode-label">Workshop · Assemble</span><span id="piece-count">0 / 12</span></div>
+      <div class="progress" role="progressbar" aria-label="Pieces assembled" aria-valuemin="0" aria-valuemax="12"><div id="fill"></div></div>
+      <p id="mode-help" class="instructions">Choose a part, aim at a highlighted tile, turn with R, and click to snap it into place.</p>
+      <div class="section-title">NEIGHBORHOOD</div>
+      <div id="building-list" class="buildings"></div>
+      <div id="workshop-panel">
+        <div class="section-title">YOUR NEXT PIECE <span id="rotation">0°</span></div>
+        <div class="selection"><span id="selection">foundation</span><button id="rotate" type="button">↻ Rotate (R)</button></div>
+        <div id="piece-tray" class="parts" aria-label="Unassembled building pieces"></div>
+        <label class="check"><input id="toggle-hints" type="checkbox" checked /> Show gentle placement hints</label>
+      </div>
+      <div id="quest-panel" hidden>
+        <div class="section-title">PEOPLE TO HELP</div>
+        <ul id="quests" class="quests"></ul>
+        <p class="instructions">Click the floating gold markers. Explore at your own pace.</p>
+      </div>
+      <button id="enter-city" class="primary" type="button" disabled>✦ Enter your city</button>
+      <button id="return-workshop" class="primary" type="button" hidden>Return to workshop</button>
+      <div class="foot-actions"><button id="reset" type="button">Start again</button><span>Auto-saved locally</span></div>
+      <div id="message" class="message">Welcome to the workshop.</div>
+      <div id="vr-entry" class="vr-entry"></div>
+    </aside>
+    <footer class="footer">CALM BY DESIGN <span>✦</span> A LITTLE WORLD THAT GROWS WITH YOU</footer>
+  </main>
+  <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
