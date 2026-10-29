@@ -7,7 +7,7 @@ import { CELL, makePiece, tilePosition, gridCoordinate, textPlane } from './rend
 import { makeCompletedBuilding } from './render/buildings.js';
 import { NEIGHBORS, getNeighbor, nextErrand, carrying, talkToNeighbor } from './core/neighborhood.mjs';
 import { anchorOf, moveWalkable, canTeleport } from './core/navigation.mjs';
-import { createNeighbor, createDoorMarker, createInterior } from './render/life.js';
+import { createNeighbor, createDoorMarker, createInterior, createSpeechPanel } from './render/life.js';
 import { NeighborhoodAudio } from './audio/ambient.js';
 import './style.css';
 
@@ -294,8 +294,8 @@ function presentDialogue(who, text, id=null) {
     const neighbor=getNeighbor(id);
     const anchor=neighbor && anchorOf(pack,neighbor.buildingId);
     if(anchor) {
-      const line=textPlane(text.length>74?text.slice(0,71)+'…':text,3.9,.36,'#243f40','#ffedce');
-      line.position.set(anchor.x,3.25,anchor.z+2.1);
+      const line=createSpeechPanel(who,text);
+      line.position.set(anchor.x,3.02,anchor.z+2.1);
       speechRoot.add(line);
     }
   }
@@ -499,7 +499,7 @@ function snapTurnInPlace(amount) {
 }
 function handleRay(ray, controllerUse=false) {
   const targets=inside ? [interiorRoot]
-    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot]:[]),
+    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot,speechRoot]:[]),
        ...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
@@ -514,6 +514,7 @@ function handleRay(ray, controllerUse=false) {
     if(action?.action==='explore')return setMode('explore');
     if(action?.action==='workshop')return setMode('workshop');
     if(action?.action==='talk')return speak(action.data);
+    if(action?.action==='close-dialogue')return closeDialogue();
     if(action?.action==='interior')return enterInterior(action.data);
     if(action?.action==='exit-interior')return leaveInterior();
     if(action?.action==='sound')return toggleAudio();
