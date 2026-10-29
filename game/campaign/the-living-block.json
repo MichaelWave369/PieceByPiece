@@ -1,0 +1,196 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "the-living-block",
+    "title": "The Living Block",
+    "creator": "Piece by Piece",
+    "description": "Restore a café, a warm little home, and a lantern garden. Then step inside the block and help your neighbors.",
+    "difficulty": "gentle",
+    "estimatedMinutes": 15,
+    "tags": [
+      "campaign",
+      "cozy",
+      "starter"
+    ]
+  },
+  "city": {
+    "theme": "village",
+    "grid": {
+      "width": 12,
+      "height": 12
+    },
+    "seed": 369
+  },
+  "buildings": [
+    {
+      "id": "cafe",
+      "name": "Sunbeam Café"
+    },
+    {
+      "id": "home",
+      "name": "Bluebell House"
+    },
+    {
+      "id": "garden",
+      "name": "Lantern Garden"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "cafe-foundation",
+      "buildingId": "cafe",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "cafe-wall",
+      "buildingId": "cafe",
+      "prefab": "wall",
+      "target": {
+        "x": 4,
+        "y": 4,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "cafe-door",
+      "buildingId": "cafe",
+      "prefab": "door",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "cafe-roof",
+      "buildingId": "cafe",
+      "prefab": "roof",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "home-foundation",
+      "buildingId": "home",
+      "prefab": "foundation",
+      "target": {
+        "x": 7,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "home-wall",
+      "buildingId": "home",
+      "prefab": "wall",
+      "target": {
+        "x": 8,
+        "y": 4,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "home-door",
+      "buildingId": "home",
+      "prefab": "door",
+      "target": {
+        "x": 7,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "home-roof",
+      "buildingId": "home",
+      "prefab": "roof",
+      "target": {
+        "x": 7,
+        "y": 4,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-path",
+      "buildingId": "garden",
+      "prefab": "road",
+      "target": {
+        "x": 5,
+        "y": 8,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-bed",
+      "buildingId": "garden",
+      "prefab": "garden",
+      "target": {
+        "x": 6,
+        "y": 8,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-lamp",
+      "buildingId": "garden",
+      "prefab": "lamp",
+      "target": {
+        "x": 5,
+        "y": 9,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "garden-bridge",
+      "buildingId": "garden",
+      "prefab": "bridge",
+      "target": {
+        "x": 4,
+        "y": 8,
+        "z": 0,
+        "rotation": 90
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "visit-cafe",
+      "title": "Meet the café keeper",
+      "kind": "visit-building",
+      "buildingId": "cafe"
+    },
+    {
+      "id": "inspect-home",
+      "title": "Check the new home",
+      "kind": "inspect-building",
+      "buildingId": "home"
+    },
+    {
+      "id": "visit-garden",
+      "title": "Light the garden path",
+      "kind": "visit-building",
+      "buildingId": "garden"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}
