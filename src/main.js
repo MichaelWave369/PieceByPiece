@@ -12,6 +12,7 @@ import { createNeighbor, createDoorMarker, createInterior, createSpeechPanel } f
 import { NeighborhoodAudio } from './audio/ambient.js';
 import { blankCitySystems, restoreCitySystems, validateSystemDefinition, circuitStatus, toggleSystemNode, available } from './core/city-systems.mjs';
 import { createCitySystemsScene } from './render/city-systems.js';
+import { makeShowcaseSession, guideFor } from './core/visitor-guide.mjs';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -21,6 +22,9 @@ const configErrors = validateSystemDefinition(pack,systemsPack);
 if(configErrors.length)throw new Error('Invalid campaign city infrastructure: '+configErrors.join(', '));
 const CITY = pack.city.grid;
 let state = loadSave();
+const showcaseSession=makeShowcaseSession(pack);
+let tourActive=false;
+const viewedSession=()=>tourActive?showcaseSession:state;
 let systemsState = loadSystems();
 let currentCircuit=circuitStatus(pack,systemsPack,state,systemsState);
 let mode = 'workshop';
@@ -172,17 +176,18 @@ function discard(group) {
 }
 function getSelected() { return pack.pieces.find(p=>p.id===selected) || null; }
 function refreshPlaced() {
+  const display=viewedSession();
   discard(placedRoot);
   discard(completedRoot);
   for(const building of pack.buildings) {
-    if(!buildingComplete(pack,state,building.id))continue;
+    if(!buildingComplete(pack,display,building.id))continue;
     const anchor=pack.pieces.find(piece=>piece.buildingId===building.id && piece.target.z===0);
     const model=makeCompletedBuilding(building.id);
     model.position.copy(tilePosition(CITY,anchor.target));
     completedRoot.add(model);
   }
   for(const piece of pack.pieces) {
-    if(!state.placed.includes(piece.id) || buildingComplete(pack,state,piece.buildingId))continue;
+    if(!display.placed.includes(piece.id) || buildingComplete(pack,display,piece.buildingId))continue;
     const model=makePiece(piece);
     model.position.copy(tilePosition(CITY,piece.target));
     model.rotation.y=THREE.MathUtils.degToRad(piece.target.rotation);
@@ -288,7 +293,7 @@ function refreshNeighborhood() {
   lifeLabels.length=0;
   if(mode!=='explore' || inside)return;
   for(const neighbor of NEIGHBORS){
-    if(!buildingComplete(pack,state,neighbor.buildingId))continue;
+    if(!buildingComplete(pack,viewedSession(),neighbor.buildingId))continue;
     const anchor=anchorOf(pack,neighbor.buildingId);
     if(!anchor)continue;
     const avatar=createNeighbor(neighbor);
@@ -325,6 +330,11 @@ function closeDialogue(){
 }
 function speak(id){
   if(mode!=='explore')return;
+  if(tourActive){
+    const neighbor=getNeighbor(id);
+    if(neighbor)presentDialogue(neighbor.name,neighbor.repeat,id);
+    return;
+  }
   if(inside)leaveInterior();
   const outcome=talkToNeighbor(pack,state,id);
   if(outcome.changed){
@@ -339,7 +349,7 @@ function speak(id){
   refreshUI();
 }
 function enterInterior(id){
-  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,state,id))return;
+  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,viewedSession(),id))return;
   closeDialogue();
   inside=id;
   discard(interiorRoot);
@@ -369,10 +379,14 @@ function leaveInterior(){
   notify('Back on the street. There is no rush.');
 }
 function setMode(value) {
-  if(value==='explore' && !progress(pack,state).complete) {
+  if(value==='explore' && !tourActive && !progress(pack,state).complete) {
     return notify('Complete all 12 pieces before entering the city.');
   }
   mode=value;
+  if(value==='workshop'){
+    tourActive=false;
+    refreshPlaced();
+  }
   inside=null;
   closeDialogue();
   interiorRoot.visible=false;
@@ -431,7 +445,7 @@ function refreshSystemControls(){
     const button=document.createElement('button');
     button.type='button';
     const ready=available(pack,state,node);
-    button.disabled=mode!=='explore'||!ready;
+    button.disabled=mode!=='explore'||!ready||tourActive;
     const on=systemsState.enabled.includes(node.id);
     button.textContent=(on?'● ':'○ ')+node.label+(ready?'': ' · Help the neighbor first');
     button.setAttribute('aria-pressed',String(on));
@@ -440,7 +454,7 @@ function refreshSystemControls(){
   }
 }
 function toggleInfrastructure(id){
-  if(mode!=='explore' || inside)return;
+  if(mode!=='explore' || inside || tourActive)return;
   const result=toggleSystemNode(pack,systemsPack,state,systemsState,id);
   if(!result.ok)return notify(result.reason);
   systemsState=result.state;
@@ -451,6 +465,9 @@ function toggleInfrastructure(id){
 }
 function refreshUI() {
   const p=progress(pack,state);
+  const guide=guideFor(pack,state,mode,inside,tourActive);
+  $('guide-title').textContent=guide.title;
+  $('guide-detail').textContent=guide.detail;
   $('piece-count').textContent=p.placed+' / '+p.total;
   $('fill').style.width=(100*p.placed/p.total)+'%';
   document.querySelector('.progress').setAttribute('aria-valuenow',String(p.placed));
@@ -482,6 +499,9 @@ function refreshUI() {
   $('rotation').textContent=rotation+'°';
   $('rotate').disabled=mode!=='workshop' || !selected;
   $('enter-city').disabled=!p.complete || mode==='explore';
+  $('preview-city').hidden=mode!=='workshop';
+  $('end-preview').hidden=!tourActive;
+  $('fit-piece').disabled=mode!=='workshop' || !selected || !$('assist-enabled').checked;
   $('return-workshop').hidden=mode==='workshop';
   $('exit-interior').hidden=mode!=='explore' || !inside;
   $('enter-city').hidden=mode==='explore';
@@ -537,7 +557,7 @@ function teleportTo(root,worldPoint) {
   const viewer=new THREE.Vector3();
   renderer.xr.getCamera().getWorldPosition(viewer);
   const local=root.worldToLocal(worldPoint.clone());
-  if(!canTeleport(pack,state,local,inside,currentCircuit.gateOpen)){
+  if(!canTeleport(pack,viewedSession(),local,inside,currentCircuit.gateOpen)){
     notify('Choose a clear patch of ground to teleport.');
     return;
   }
@@ -701,7 +721,7 @@ function desktopExploreStep(delta) {
   if(heldKeys.has('KeyA'))motion.sub(side);
   if(motion.lengthSq()) {
     motion.normalize().multiplyScalar(Math.min(delta,.05)*4);
-    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside,currentCircuit.gateOpen);
+    const next=moveWalkable(pack,viewedSession(),{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside,currentCircuit.gateOpen);
     camera.position.x=next.x;
     camera.position.z=next.z;
   }
