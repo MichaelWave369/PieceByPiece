@@ -90,6 +90,9 @@ returnText.position.set(-1.2,2.7,4.8);world.add(returnText);
 const atlasText=textPlane('DISTRICT ATLAS',2.0,.41);
 atlasText.userData={action:'atlas'};
 atlasText.position.set(1.2,2.7,4.8);world.add(atlasText);
+const ironSign=textPlane('NEXT: IRONHAVEN',2.3,.40);
+ironSign.userData={action:'ironhaven'};
+ironSign.position.set(0,2.3,3.65);world.add(ironSign);
 let ghost=null;
 function clear(root){root.clear();}
 function chosen(){return pack.pieces.find(p=>p.id===selected)||null;}
@@ -169,6 +172,7 @@ function speak(id){
  if(outcome.changed){
   state=outcome.session;save();
   scenery.skyRoot.visible=skywalkOpen(state);
+  ironSign.visible=mode==='explore'&&skywalkOpen(state);
   refreshUI();
  }
  conversation=outcome;
@@ -205,6 +209,7 @@ function updateMode(next){
  table.visible=xrActive&&mode==='workshop';
  boardGrid.visible=mode==='workshop';
  returnText.visible=mode==='explore';atlasText.visible=mode==='explore';
+ ironSign.visible=mode==='explore'&&skywalkOpen(state);
  scenery.skyRoot.visible=mode==='explore'&&skywalkOpen(state);
  if(desktop){
   controls.enabled=mode==='workshop';
@@ -247,6 +252,7 @@ function refreshUI(){
  $('harbor-enter').disabled=!canPlay||!p.complete;
  $('harbor-return').hidden=mode!=='explore';
  $('harbor-rotation').textContent=rotation+'°';
+ $('iron-next').hidden=mode!=='explore'||!skywalkOpen(state);
  $('harbor-rotate').disabled=!selected;
  $('harbor-fit').disabled=!canPlay||!selected||!$('harbor-assist').checked;
  $('harbor-buildings').replaceChildren();
@@ -310,7 +316,7 @@ function teleport(worldPoint){
  world.position.y=-destination.height;
 }
 function rayAction(r,fromXR=false){
- const targets=[picking,...(mode==='explore'?[scenery.upperPick,markerRoot,returnText,atlasText,speechRoot]:[]),...(xrActive?[shelf]:[])];
+ const targets=[picking,...(mode==='explore'?[scenery.upperPick,markerRoot,returnText,atlasText,ironSign,speechRoot]:[]),...(xrActive?[shelf]:[])];
  const hits=r.intersectObjects(targets,true);
  for(const hit of hits){
   const action=actionFrom(hit.object);
@@ -324,6 +330,7 @@ function rayAction(r,fromXR=false){
   if(action?.action==='explore')return updateMode('explore');
   if(action?.action==='return')return updateMode('workshop');
   if(action?.action==='atlas')return window.location.assign('./districts.html');
+  if(action?.action==='ironhaven'&&skywalkOpen(state))return window.location.assign('./ironhaven.html');
   if(action?.action==='talk')return speak(action.data);
   if(action?.action==='close-dialogue')return closeSpeech();
   if(hit.object===scenery.upperPick && fromXR && mode==='explore')return teleport(hit.point);
@@ -439,6 +446,7 @@ function render(){
  for(const label of markerLabels)label.quaternion.copy(facing);
  for(const label of speechRoot.children)label.quaternion.copy(facing);
  returnText.quaternion.copy(facing);atlasText.quaternion.copy(facing);
+ ironSign.quaternion.copy(facing);
  renderer.render(scene,camera);
 }
 redrawBuildings();
