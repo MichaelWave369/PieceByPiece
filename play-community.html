@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1d4449"><meta name="description" content="Play reviewed or local PieceByPiece community city puzzles in the browser and Quest VR.">
+<title>Community City Player · PieceByPiece</title></head>
+<body class="community-player-page">
+<header class="community-play-head">
+ <a href="./catalogue.html">← The Commons Library</a>
+ <div><span class="tiny-heading">PIECE BY PIECE · COMMUNITY GAME</span><h1 id="play-title">COMMUNITY CITY</h1><p id="play-byline">Each city is its own little world.</p></div>
+ <a href="./commons.html">Make your own</a>
+</header>
+<section id="player-load" class="player-load">
+ <p id="player-status" role="status" aria-live="polite">Choose a reviewed city or import a city file.</p>
+ <label>Open a safe city JSON file (64 KiB max)<input id="player-import" type="file" accept=".json,application/json"></label>
+</section>
+<div id="player-main" class="community-play-layout" hidden>
+ <aside class="community-play-tools" aria-label="Community city puzzle controls">
+  <div class="play-progress"><strong id="player-mode">ARCHITECT'S TABLE</strong><span id="player-progress">0 / 0</span></div>
+  <div class="play-meter"><div id="player-bar"></div></div>
+  <p id="player-message" aria-live="polite">Build the community, piece by piece.</p>
+  <p id="player-city-story"></p>
+  <div id="player-construction">
+   <h2>CHOOSE A PIECE</h2><div id="player-pieces" class="play-piece-grid"></div>
+   <label>Rotate piece<select id="player-rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+   <button type="button" id="player-fit">Fit selected piece (assisted)</button>
+  </div>
+  <div class="player-missions">
+   <h2>EXPLORE THE COMMUNITY</h2>
+   <p>After rebuilding a structure, visit or inspect it to complete its authored missions.</p>
+   <div id="player-mission-list"></div>
+  </div>
+  <p id="player-victory" class="player-victory" hidden>YOU RESTORED THIS COMMUNITY! Every building and mission is complete.</p>
+  <button type="button" id="player-restart">Restart this community puzzle</button>
+  <p class="player-footnote">Saved on this device for this exact city revision. Official campaign progress stays untouched.</p>
+ </aside>
+ <main class="player-viewport">
+  <div id="player-scene" aria-label="3D puzzle city with selectable grid"></div>
+  <div class="player-canvas-hint">Drag to orbit · Scroll to zoom · Click a tile to place the selected shape</div>
+  <div id="community-vr"></div>
+ </main>
+</div>
+<script type="module" src="/src/community-player.js"></script></body></html>
