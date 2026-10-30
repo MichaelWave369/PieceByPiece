@@ -26,7 +26,7 @@ function startArchitect(){
   if(raw&&new TextEncoder().encode(raw).byteLength<=MAX_PACK_BYTES)
    pack=safeDraft(JSON.parse(raw));
  }catch{}
- let mode='design',test=null,receipt=null,selected=null,showError=false,vr=false;
+ let mode='design',test=null,receipt=null,selected=null,movingSelected=false,vr=false;
  const $view=$('commons-3d');
  const signal=(message,isError=false)=>{
   $('commons-feedback').textContent=message;
@@ -156,7 +156,7 @@ function startArchitect(){
    else receipt=null;
    if(priorTest)test={...test,signature:JSON.stringify(pack)};
    else test=null;
-   selected=null;showError=false;
+   selected=null;movingSelected=false;
    persist();refresh();
    signal('Saved locally. Playtest the updated design before exporting.');
   }catch(error){signal(error.message,true);}
@@ -178,17 +178,21 @@ function startArchitect(){
   $('building-list').replaceChildren();
   for(const b of pack.buildings){
    const row=document.createElement('div');row.className='commons-entry';
-   const info=document.createElement('span');info.textContent=b.name;
+   const info=document.createElement('input');info.value=b.name;
+   info.maxLength=60;info.setAttribute('aria-label','Rename '+b.name);
+   info.addEventListener('change',()=>applyEdit({type:'renameBuilding',id:b.id,name:info.value}));
    const count=document.createElement('small');count.textContent=pack.pieces.filter(p=>p.buildingId===b.id).length+' pieces';
    row.append(info,count);
    row.append(actionButton('×',()=>applyEdit({type:'removeBuilding',id:b.id}),true));
    $('building-list').append(row);
   }
+  $('move-piece').disabled=!selected||mode!=='design';
+  $('move-piece').textContent=movingSelected?'Moving selected piece · Click a new tile':'Move selected piece to a new tile';
   $('piece-list').replaceChildren();
   for(const p of pack.pieces){
    const row=document.createElement('div');row.className='commons-entry';
    const btn=actionButton(p.id===selected?'● '+p.prefab:p.prefab,()=>{
-    selected=p.id;paintScene();refreshSelectionButtons();
+    selected=p.id;movingSelected=false;$('move-piece').disabled=false;paintScene();refreshSelectionButtons();
    },true);
    btn.dataset.piece=p.id;
    const meta=document.createElement('small');meta.textContent=p.buildingId+' · '+p.target.x+','+p.target.y+' · z'+p.target.z+' · '+p.target.rotation+'°';
@@ -277,8 +281,12 @@ function startArchitect(){
   const tile=gridCoordinate(pack.city.grid,local,Number($('piece-level').value),
     Number($('piece-rotation').value));
   if(mode==='design'){
-   applyEdit({type:'addPiece',buildingId:$('piece-building').value,
-    prefab:$('piece-prefab').value,target:tile});
+   if(movingSelected&&selected){
+    applyEdit({type:'changePiece',id:selected,target:tile});
+   }else{
+    applyEdit({type:'addPiece',buildingId:$('piece-building').value,
+     prefab:$('piece-prefab').value,target:tile});
+   }
   }else if(test&&selected){
    const piece=pack.pieces.find(p=>p.id===selected);
    testPlace({...tile,z:piece.target.z,rotation:Number($('test-rotation').value)});
@@ -344,6 +352,12 @@ function startArchitect(){
   applyEdit({type:'addBuilding',name:$('new-building-name').value});
   $('new-building-name').value='';
  });
+ $('move-piece').addEventListener('click',()=>{
+  if(!selected)return;
+  movingSelected=!movingSelected;
+  $('move-piece').textContent=movingSelected?'Moving selected piece · Click a new tile':'Move selected piece to a new tile';
+  signal(movingSelected?'Click an unoccupied grid tile to relocate the selected piece.':'Move mode cancelled.');
+ });
  $('add-mission').addEventListener('click',()=>{
   applyEdit({type:'addMission',title:$('mission-title').value,buildingId:$('piece-building').value});
   $('mission-title').value='';
@@ -385,16 +399,23 @@ function startArchitect(){
   if(file.size>MAX_PACK_BYTES)return signal('This file exceeds the 64 KiB limit.',true);
   try{
    const imported=importCommonsPack(await file.text());
+   if(!window.confirm('Replace the current local Commons draft with '+imported.metadata.title+'? This does not alter campaign saves.'))return;
    pack=imported;test=null;receipt=null;selected=null;mode='design';
    persist();refresh();signal('Imported safely. Sharing rights must be confirmed again; replay the test before export.');
   }catch(error){signal('Import rejected: '+error.message,true);}
  });
  $('load-example').addEventListener('click',()=>{
+  if(!window.confirm('Replace the current local draft with the bundled Lantern Lane example? Export your draft first if you want to keep it.'))return;
   try{
    pack=safeDraft(examplePack);
    test=null;receipt=null;selected=null;mode='design';
    persist();refresh();signal('Lantern Lane is loaded as a local editable example. No campaign progress was changed.');
   }catch(e){signal(e.message,true);}
+ });
+ $('new-city').addEventListener('click',()=>{
+  if(!window.confirm('Start a fresh Commons city? Your current draft will be replaced. Export it first if you want a backup.'))return;
+  pack=newCommonsPack();test=null;receipt=null;selected=null;movingSelected=false;mode='design';
+  persist();refresh();signal('New local city started. Build something the world can share.');
  });
  refresh();resize();
 }
