@@ -54,6 +54,7 @@
       <label>Level <select id="piece-level"><option value="0">Ground · 0</option><option value="1">Upper · 1</option><option value="2">Upper · 2</option><option value="3">Upper · 3</option></select></label>
       <label>Rotation <select id="piece-rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
      </div>
+     <button id="move-piece" type="button" disabled>Move selected piece to a new tile</button>
      <div id="piece-list" class="commons-scroll"></div>
     </div>
     <div class="commons-section">
@@ -86,6 +87,7 @@
     <button id="export-pack" type="button">Export validated city JSON</button>
     <label class="commons-import">Import a city JSON (≤64 KiB) <input id="import-pack" type="file" accept=".json,application/json"></label>
     <button id="load-example" type="button">Explore the curated Lantern Lane example</button>
+    <button id="new-city" type="button">Start a fresh Commons city</button>
     <p class="commons-help">Export is local only. Sharing is manual via the downloaded file or a reviewed GitHub pull request. No automatic publication, uploads, or accounts.</p>
    </section>
   </aside>
