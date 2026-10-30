@@ -1,0 +1,197 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "citadel-common-ground",
+    "title": "The Corporate Citadel: Common Ground",
+    "creator": "Piece by Piece",
+    "description": "Rebuild the public archive, reclaim the central relay and open the citizens' forum. Release the city's three public safeguards and reclaim the blueprints.",
+    "difficulty": "intricate",
+    "estimatedMinutes": 30,
+    "tags": [
+      "campaign",
+      "neon",
+      "finale",
+      "commons"
+    ]
+  },
+  "city": {
+    "theme": "neon",
+    "grid": {
+      "width": 16,
+      "height": 16
+    },
+    "seed": 369005
+  },
+  "buildings": [
+    {
+      "id": "archive",
+      "name": "The Open Archive"
+    },
+    {
+      "id": "relay",
+      "name": "Central Signal Tower"
+    },
+    {
+      "id": "forum",
+      "name": "The Citizens' Forum"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "archive-foundation",
+      "buildingId": "archive",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "archive-wall",
+      "buildingId": "archive",
+      "prefab": "wall",
+      "target": {
+        "x": 4,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "archive-door",
+      "buildingId": "archive",
+      "prefab": "door",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "archive-roof",
+      "buildingId": "archive",
+      "prefab": "roof",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "relay-foundation",
+      "buildingId": "relay",
+      "prefab": "foundation",
+      "target": {
+        "x": 12,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "relay-tower",
+      "buildingId": "relay",
+      "prefab": "tower",
+      "target": {
+        "x": 12,
+        "y": 4,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "relay-lamp",
+      "buildingId": "relay",
+      "prefab": "lamp",
+      "target": {
+        "x": 11,
+        "y": 4,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "relay-stairs",
+      "buildingId": "relay",
+      "prefab": "stairs",
+      "target": {
+        "x": 12,
+        "y": 5,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "forum-foundation",
+      "buildingId": "forum",
+      "prefab": "foundation",
+      "target": {
+        "x": 11,
+        "y": 11,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "forum-bridge",
+      "buildingId": "forum",
+      "prefab": "bridge",
+      "target": {
+        "x": 10,
+        "y": 11,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "forum-road",
+      "buildingId": "forum",
+      "prefab": "road",
+      "target": {
+        "x": 11,
+        "y": 10,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "forum-lamp",
+      "buildingId": "forum",
+      "prefab": "lamp",
+      "target": {
+        "x": 12,
+        "y": 11,
+        "z": 0,
+        "rotation": 180
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "recover-blueprints",
+      "title": "Restore the freely shared blueprints",
+      "kind": "inspect-building",
+      "buildingId": "archive"
+    },
+    {
+      "id": "release-signal",
+      "title": "Return the signal network to the community",
+      "kind": "visit-building",
+      "buildingId": "relay"
+    },
+    {
+      "id": "convene-assembly",
+      "title": "Convene the citizens' final assembly",
+      "kind": "inspect-building",
+      "buildingId": "forum"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}

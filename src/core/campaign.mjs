@@ -5,6 +5,7 @@
 import { restoreSession, progress } from './puzzle.mjs';
 import { restoreCitySystems, circuitStatus } from './city-systems.mjs';
 import {restoreRail,railStatus} from './rail-routing.mjs';
+import {restoreCharter,charterStatus} from './citadel-charter.mjs';
 
 export const FIRST_SAVE_KEY='piece-by-piece:campaign:the-living-block:v1';
 export const FIRST_SYSTEMS_SAVE_KEY='piece-by-piece:systems:the-living-block:v1';
@@ -88,4 +89,26 @@ export function readIronStatus(storage,ironPack){
  return {session,rail,route:status,built:p.placed,total:p.total,
   quests:p.missions,totalQuests:p.totalMissions,
   complete:p.complete&&p.missions===p.totalMissions&&status.delivered};
+}
+
+export const CITADEL_SAVE_KEY='piece-by-piece:campaign:citadel-common-ground:v1';
+export const CITADEL_CHARTER_KEY='piece-by-piece:charter:citadel-common-ground:v1';
+
+/** Chapter five begins only after Ironhaven's complete public freight delivery. */
+export function readCitadelAccess(storage,ironPack){
+ const iron=readIronStatus(storage,ironPack);
+ return {unlocked:iron.complete,built:iron.built,total:iron.total,
+   quests:iron.quests,totalQuests:iron.totalQuests,railDelivered:iron.route.delivered};
+}
+export function readCitadelStatus(storage,citadelPack){
+ let raw=null,rawCharter=null;
+ try{raw=JSON.parse(storage.getItem(CITADEL_SAVE_KEY));}catch{}
+ try{rawCharter=JSON.parse(storage.getItem(CITADEL_CHARTER_KEY));}catch{}
+ const session=restoreSession(citadelPack,raw);
+ const charter=restoreCharter(citadelPack,rawCharter);
+ const status=charterStatus(citadelPack,session,charter);
+ const p=progress(citadelPack,session);
+ return {session,charter,manifest:status,built:p.placed,total:p.total,
+   quests:p.missions,totalQuests:p.totalMissions,
+   complete:p.complete&&p.missions===p.totalMissions&&status.ratified};
 }

@@ -102,6 +102,9 @@ returnText.position.set(-1.2,2.7,4.8);world.add(returnText);
 const atlasText=textPlane('DISTRICT ATLAS',2.0,.41);
 atlasText.userData={action:'atlas'};
 atlasText.position.set(1.2,2.7,4.8);world.add(atlasText);
+const citadelSign=textPlane('NEXT: CITADEL',2.25,.40);
+citadelSign.userData={action:'citadel'};
+citadelSign.position.set(0,2.40,3.65);world.add(citadelSign);
 let ghost=null;
 function clear(root){root.clear();}
 function chosen(){return pack.pieces.find(p=>p.id===selected)||null;}
@@ -254,6 +257,8 @@ function refreshRail(){
  scenery.freightYard.visible=mode==='explore';
  scenery.gate.visible=mode==='explore';
  scenery.train.visible=mode==='explore'&&railView.delivered;
+ citadelSign.visible=mode==='explore'&&railView.delivered;
+ $('citadel-next').hidden=mode!=='explore'||!railView.delivered;
  $('iron-rail-count').textContent=railView.publicSegments+' / '+railView.totalSegments;
  $('iron-rail-result').textContent=railView.delivered
   ? 'Public supplies delivered. The Commons Freight Yard stays open.'
@@ -349,7 +354,7 @@ function teleport(worldPoint){
  world.position.y=0;
 }
 function rayAction(r,fromXR=false){
- const targets=[picking,...(mode==='explore'?[scenery.railGroup,markerRoot,returnText,atlasText,speechRoot]:[]),...(xrActive?[shelf]:[])];
+ const targets=[picking,...(mode==='explore'?[scenery.railGroup,markerRoot,returnText,atlasText,citadelSign,speechRoot]:[]),...(xrActive?[shelf]:[])];
  const hits=r.intersectObjects(targets,true);
  for(const hit of hits){
   const action=actionFrom(hit.object);
@@ -363,6 +368,7 @@ function rayAction(r,fromXR=false){
   if(action?.action==='explore')return updateMode('explore');
   if(action?.action==='return')return updateMode('workshop');
   if(action?.action==='atlas')return window.location.assign('./districts.html');
+  if(action?.action==='citadel'&&railView.delivered)return window.location.assign('./citadel.html');
   if(action?.action==='talk')return speak(action.data);
   if(action?.action==='rail')return toggleRail(action.data);
   if(action?.action==='close-dialogue')return closeSpeech();
@@ -479,6 +485,7 @@ function render(){
  for(const label of markerLabels)label.quaternion.copy(facing);
  for(const label of speechRoot.children)label.quaternion.copy(facing);
  returnText.quaternion.copy(facing);atlasText.quaternion.copy(facing);
+  citadelSign.quaternion.copy(facing);
   for(const label of scenery.labels)label.quaternion.copy(facing);
   scenery.tick(dt,mode==='explore',window.matchMedia('(prefers-reduced-motion: reduce)').matches||xrActive);
  renderer.render(scene,camera);
