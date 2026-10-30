@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#183f45"><meta name="description" content="Discover community-created PieceByPiece cities in a human-reviewed, checksum-verified static catalogue.">
+<title>The Commons Library · PieceByPiece</title>
+</head><body class="catalogue-page">
+<main class="library-shell">
+ <header class="library-head">
+  <a href="./districts.html">← District Atlas</a><span class="tiny-heading">PIECE BY PIECE · HUMAN-REVIEWED CITIES</span>
+  <h1>THE COMMONS <em>LIBRARY</em></h1>
+  <p>Small cities. Big imaginations. Real puzzles created by people, shared without a company account.</p>
+  <nav><a href="./commons.html">Open your Architect Workshop</a><a href="./play-community.html">Play a city from a local file</a></nav>
+ </header>
+ <section class="library-toolbar" aria-label="Filter and search approved city puzzles">
+  <label>Search cities<input id="search-cities" type="search" placeholder="Name, creator, or theme" autocomplete="off"></label>
+  <label>Environment<select id="filter-theme"><option value="all">All environments</option><option value="village">Village</option><option value="harbor">Harbor</option><option value="garden">Garden</option><option value="industrial">Industrial</option><option value="neon">Neon</option></select></label>
+ </section>
+ <p id="library-status" role="status" aria-live="polite">Loading the reviewed library…</p>
+ <section id="library-grid" class="library-grid" aria-label="Approved community city list"></section>
+ <footer class="library-footer">
+  <h2>How do cities join?</h2>
+  <p>The catalogue is generated from city packs already reviewed and committed to <code>community/packs/</code>. Every published pack is validated and SHA-256 checked again before play. Export your own creation from the Workshop, then submit it as a GitHub pull request for human review. No automatic uploads or live multiplayer.</p>
+  <a href="https://github.com/MichaelWave369/PieceByPiece/tree/main/community/packs">View the reviewed source packs on GitHub</a>
+ </footer>
+</main>
+<script type="module" src="/src/catalogue.js"></script></body></html>
