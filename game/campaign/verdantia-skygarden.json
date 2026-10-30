@@ -130,7 +130,7 @@
       "buildingId": "canopy",
       "prefab": "foundation",
       "target": {
-        "x": 7,
+        "x": 11,
         "y": 9,
         "z": 0,
         "rotation": 0
@@ -141,7 +141,7 @@
       "buildingId": "canopy",
       "prefab": "bridge",
       "target": {
-        "x": 7,
+        "x": 11,
         "y": 10,
         "z": 0,
         "rotation": 90
@@ -152,7 +152,7 @@
       "buildingId": "canopy",
       "prefab": "lamp",
       "target": {
-        "x": 8,
+        "x": 12,
         "y": 9,
         "z": 0,
         "rotation": 0
@@ -163,7 +163,7 @@
       "buildingId": "canopy",
       "prefab": "garden",
       "target": {
-        "x": 6,
+        "x": 10,
         "y": 9,
         "z": 0,
         "rotation": 0
