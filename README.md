@@ -21,6 +21,20 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
+## Chapter Five: The Corporate Citadel, Common Ground
+
+**The authored five-city campaign now has a finale.** After restoring Ironhaven's public freight railway, the [District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) opens the fifth city, the **Corporate Citadel**.
+
+Rebuild **The Open Archive**, **Central Signal Tower**, and **Citizens' Forum** from twelve architectural pieces. Help Ren, Noor and Imi recover the city's shared designs and communications. Then release three public-charter safeguards, **Knowledge, Connection and Consent**, through clickable in-world monuments or accessible desktop controls.
+
+Activating all three opens a public forum, records a locally saved campaign victory, and concludes the story **without mandatory combat**. The finale is designed for desktop and Quest Browser with the same WebXR controller interaction patterns as earlier chapters.
+
+The first four campaign saves stay unchanged; the Citadel construction and charter each have their own versioned local save. GitHub Pages will add the sixth route after merging and deploying this PR:
+
+https://michaelwave369.github.io/PieceByPiece/citadel.html
+
+See [Rung 8 playtest and finale guide](docs/RUNG8_CITADEL.md). **The Commons community-city editor and submission workflow are still future work**, not something the campaign ending falsely claims to implement. Quest 3 comfort and visual interaction still require manual testing.
+
 ## Chapter Four: Ironhaven, the Commons Rail
 
 After fully restoring Verdantia's public skywalk, the [District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) unlocks **Ironhaven**. This fourth playable city adds twelve industrial building pieces, a Salvage Workshop, a Community Foundry and a Commons Rail Terminal. Help **Rook, Ada and Jun** recover tools and return public dispatch to the workers.
