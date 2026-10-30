@@ -21,6 +21,21 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
+## The Commons Workshop · Rung 9
+
+**Once the Corporate Citadel's Common Ground Charter is ratified, the District Atlas unlocks a genuine city-creation workshop.** You can build your own 3D architecture puzzles, add small missions, then playtest them from an empty city before sharing.
+
+- **3D architect's tabletop:** choose approved parts, place them on grid tiles and upper levels, rotate, add/remove buildings and pieces, and write simple missions.
+- **Same trusted rules:** the browser editor and GitHub CI share one strict `piecebypiece.city.v1` validator. All community content stays declarative, capped at 64 KiB, and cannot import scripts, arbitrary 3D models or remote asset links.
+- **Real offline-first test:** build all pieces and complete all missions with the same deterministic puzzle/mission core as the campaign. A matching playthrough and explicit license affirmation are required before local JSON export.
+- **Local import/export:** exchange a file directly with a friend, or propose additions to `community/packs/` using a reviewed GitHub PR. Nobody needs a paid account, upload service or live multiplayer.
+- **Quest 3 preview:** a miniature immersive tabletop and controller ray interaction are included as an early path; a complete in-headset authoring palette is a future feature.
+- **Campaign save isolation:** Commons drafts use a dedicated browser-local key. Community imports cannot unlock story chapters.
+
+**Pages URL, available after PR merge and successful deployment:** https://michaelwave369.github.io/PieceByPiece/commons.html
+
+See [Rung 9: The Commons Workshop](docs/RUNG9_COMMONS_WORKSHOP.md) for the hands-on workflow, import safety, data ownership and honest limits. This is the first local authoring/share-by-file rung, **not** an automatic community publishing service. Full offline reload requires a later cache rung.
+
 ## Chapter Five: The Corporate Citadel, Common Ground
 
 **The authored five-city campaign now has a finale.** After restoring Ironhaven's public freight railway, the [District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) opens the fifth city, the **Corporate Citadel**.
