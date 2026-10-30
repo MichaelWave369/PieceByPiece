@@ -13,12 +13,17 @@
     <header class="brand">
       <span class="eyebrow">A tiny world made by you</span>
       <h1>PIECE <em>BY</em> PIECE<span class="brand-mark">✦</span></h1>
-      <p>THE LIVING BLOCK <span class="dot">·</span> RUNG 3</p>
+      <p>THE LIVING BLOCK <span class="dot">·</span> RUNG 4</p>
     </header>
     <aside class="panel" aria-label="Puzzle and neighborhood controls">
       <div class="label-line"><span id="mode-label">Workshop · Assemble</span><span id="piece-count">0 / 12</span></div>
       <div class="progress" role="progressbar" aria-label="Pieces assembled" aria-valuemin="0" aria-valuemax="12"><div id="fill"></div></div>
       <p id="mode-help" class="instructions">Choose a part, aim at a highlighted tile, turn with R, and click to snap it into place.</p>
+      <section class="guide" aria-label="Next suggested step">
+        <div class="section-title">A GENTLE GUIDE</div>
+        <strong id="guide-title">Start with one small piece</strong>
+        <p id="guide-detail">Choose any piece to begin. There's no timer.</p>
+      </section>
       <div class="section-title">NEIGHBORHOOD</div>
       <div id="building-list" class="buildings"></div>
       <div id="workshop-panel">
@@ -26,6 +31,11 @@
         <div class="selection"><span id="selection">foundation</span><button id="rotate" type="button">↻ Rotate (R)</button></div>
         <div id="piece-tray" class="parts" aria-label="Unassembled building pieces"></div>
         <label class="check"><input id="toggle-hints" type="checkbox" checked /> Show gentle placement hints</label>
+        <div class="assist">
+          <label class="check"><input id="assist-enabled" type="checkbox" /> Enable one-piece placement assistance</label>
+          <button type="button" id="fit-piece" disabled>Fit selected piece (assisted)</button>
+          <p class="assist-note">Optional. This uses the same puzzle rules and saves normally.</p>
+        </div>
       </div>
       <div id="quest-panel" hidden>
         <div class="section-title">THE NEXT KINDNESS</div>
@@ -48,6 +58,8 @@
         <p class="instructions">Talk with your neighbors and share a few small kindnesses. Enter the café and house to look around.</p>
       </div>
       <button id="enter-city" class="primary" type="button" disabled>✦ Enter your city</button>
+      <button id="preview-city" class="secondary-button" type="button">Preview finished neighborhood</button>
+      <button id="end-preview" class="secondary-button" type="button" hidden>Exit preview · return to building</button>
       <button id="exit-interior" class="primary" type="button" hidden>← Return to street</button>
       <button id="return-workshop" class="primary" type="button" hidden>Return to workshop</button>
       <div class="settings"><label><input id="sound-enabled" type="checkbox"> Gentle ambient audio</label>
@@ -56,6 +68,14 @@
       <div id="message" class="message">Welcome to the workshop.</div>
       <div id="vr-entry" class="vr-entry"></div>
     </aside>
+    <section id="welcome" class="welcome" hidden aria-label="Welcome to PieceByPiece">
+      <div class="welcome-eyebrow">WELCOME TO THE LIVING BLOCK</div>
+      <h2>Build a little world.<br>Then step inside.</h2>
+      <p>Piece together a café, a home, and a garden. Meet the people who move in, restore their connections, and open a place for everyone.</p>
+      <div class="welcome-steps"><span>1 · Assemble</span><span>2 · Explore</span><span>3 · Connect</span></div>
+      <button type="button" id="start-building">Start building</button>
+      <button type="button" id="welcome-preview">Take a quick preview</button>
+    </section>
     <footer class="footer">CALM BY DESIGN <span>✦</span> A LITTLE WORLD THAT GROWS WITH YOU</footer>
   </main>
   <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>

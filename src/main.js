@@ -12,6 +12,7 @@ import { createNeighbor, createDoorMarker, createInterior, createSpeechPanel } f
 import { NeighborhoodAudio } from './audio/ambient.js';
 import { blankCitySystems, restoreCitySystems, validateSystemDefinition, circuitStatus, toggleSystemNode, available } from './core/city-systems.mjs';
 import { createCitySystemsScene } from './render/city-systems.js';
+import { makeShowcaseSession, guideFor } from './core/visitor-guide.mjs';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -21,6 +22,9 @@ const configErrors = validateSystemDefinition(pack,systemsPack);
 if(configErrors.length)throw new Error('Invalid campaign city infrastructure: '+configErrors.join(', '));
 const CITY = pack.city.grid;
 let state = loadSave();
+const showcaseSession=makeShowcaseSession(pack);
+let tourActive=false;
+const viewedSession=()=>tourActive?showcaseSession:state;
 let systemsState = loadSystems();
 let currentCircuit=circuitStatus(pack,systemsPack,state,systemsState);
 let mode = 'workshop';
@@ -172,17 +176,18 @@ function discard(group) {
 }
 function getSelected() { return pack.pieces.find(p=>p.id===selected) || null; }
 function refreshPlaced() {
+  const display=viewedSession();
   discard(placedRoot);
   discard(completedRoot);
   for(const building of pack.buildings) {
-    if(!buildingComplete(pack,state,building.id))continue;
+    if(!buildingComplete(pack,display,building.id))continue;
     const anchor=pack.pieces.find(piece=>piece.buildingId===building.id && piece.target.z===0);
     const model=makeCompletedBuilding(building.id);
     model.position.copy(tilePosition(CITY,anchor.target));
     completedRoot.add(model);
   }
   for(const piece of pack.pieces) {
-    if(!state.placed.includes(piece.id) || buildingComplete(pack,state,piece.buildingId))continue;
+    if(!display.placed.includes(piece.id) || buildingComplete(pack,display,piece.buildingId))continue;
     const model=makePiece(piece);
     model.position.copy(tilePosition(CITY,piece.target));
     model.rotation.y=THREE.MathUtils.degToRad(piece.target.rotation);
@@ -288,7 +293,7 @@ function refreshNeighborhood() {
   lifeLabels.length=0;
   if(mode!=='explore' || inside)return;
   for(const neighbor of NEIGHBORS){
-    if(!buildingComplete(pack,state,neighbor.buildingId))continue;
+    if(!buildingComplete(pack,viewedSession(),neighbor.buildingId))continue;
     const anchor=anchorOf(pack,neighbor.buildingId);
     if(!anchor)continue;
     const avatar=createNeighbor(neighbor);
@@ -325,6 +330,11 @@ function closeDialogue(){
 }
 function speak(id){
   if(mode!=='explore')return;
+  if(tourActive){
+    const neighbor=getNeighbor(id);
+    if(neighbor)presentDialogue(neighbor.name,neighbor.repeat,id);
+    return;
+  }
   if(inside)leaveInterior();
   const outcome=talkToNeighbor(pack,state,id);
   if(outcome.changed){
@@ -339,7 +349,7 @@ function speak(id){
   refreshUI();
 }
 function enterInterior(id){
-  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,state,id))return;
+  if(mode!=='explore' || !['cafe','home'].includes(id) || !buildingComplete(pack,viewedSession(),id))return;
   closeDialogue();
   inside=id;
   discard(interiorRoot);
@@ -369,10 +379,14 @@ function leaveInterior(){
   notify('Back on the street. There is no rush.');
 }
 function setMode(value) {
-  if(value==='explore' && !progress(pack,state).complete) {
+  if(value==='explore' && !tourActive && !progress(pack,state).complete) {
     return notify('Complete all 12 pieces before entering the city.');
   }
   mode=value;
+  if(value==='workshop'){
+    tourActive=false;
+    refreshPlaced();
+  }
   inside=null;
   closeDialogue();
   interiorRoot.visible=false;
@@ -382,7 +396,7 @@ function setMode(value) {
   positionStage();
   refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
   notify(value==='explore'
-    ? 'Welcome to The Living Block. Meet Celia, Jules, and Moss.'
+    ? (tourActive?'Preview only. Your puzzle and quest saves remain untouched.':'Welcome to The Living Block. Meet Celia, Jules, and Moss.')
     : 'Back to the workshop. No timers, no pressure.');
 }
 function positionStage() {
@@ -421,6 +435,7 @@ function refreshSystemControls(){
     : currentCircuit.lampsOn
       ? 'The lanterns glow. One more connection will open the Commons Overlook.'
       : 'Help your neighbors, then activate the three outdoor relays to route power along the street.';
+  if(tourActive) $('power-message').textContent='This is an unsaved visual preview. Restore the real neighborhood to power its lanterns.';
   $('overlook-message').replaceChildren();
   const label=document.createTextNode('COMMONS OVERLOOK ');
   const detail=document.createElement('strong');
@@ -431,7 +446,7 @@ function refreshSystemControls(){
     const button=document.createElement('button');
     button.type='button';
     const ready=available(pack,state,node);
-    button.disabled=mode!=='explore'||!ready;
+    button.disabled=mode!=='explore'||!ready||tourActive;
     const on=systemsState.enabled.includes(node.id);
     button.textContent=(on?'● ':'○ ')+node.label+(ready?'': ' · Help the neighbor first');
     button.setAttribute('aria-pressed',String(on));
@@ -440,7 +455,7 @@ function refreshSystemControls(){
   }
 }
 function toggleInfrastructure(id){
-  if(mode!=='explore' || inside)return;
+  if(mode!=='explore' || inside || tourActive)return;
   const result=toggleSystemNode(pack,systemsPack,state,systemsState,id);
   if(!result.ok)return notify(result.reason);
   systemsState=result.state;
@@ -451,6 +466,9 @@ function toggleInfrastructure(id){
 }
 function refreshUI() {
   const p=progress(pack,state);
+  const guide=guideFor(pack,state,mode,inside,tourActive);
+  $('guide-title').textContent=guide.title;
+  $('guide-detail').textContent=guide.detail;
   $('piece-count').textContent=p.placed+' / '+p.total;
   $('fill').style.width=(100*p.placed/p.total)+'%';
   document.querySelector('.progress').setAttribute('aria-valuenow',String(p.placed));
@@ -482,6 +500,9 @@ function refreshUI() {
   $('rotation').textContent=rotation+'°';
   $('rotate').disabled=mode!=='workshop' || !selected;
   $('enter-city').disabled=!p.complete || mode==='explore';
+  $('preview-city').hidden=mode!=='workshop';
+  $('end-preview').hidden=!tourActive;
+  $('fit-piece').disabled=mode!=='workshop' || !selected || !$('assist-enabled').checked;
   $('return-workshop').hidden=mode==='workshop';
   $('exit-interior').hidden=mode!=='explore' || !inside;
   $('enter-city').hidden=mode==='explore';
@@ -499,7 +520,7 @@ function refreshUI() {
     const button=document.createElement('button');
     button.type='button';
     button.textContent='Talk to '+neighbor.name+(done?' ✓':'');
-    button.disabled=mode!=='explore' || !buildingComplete(pack,state,neighbor.buildingId);
+    button.disabled=mode!=='explore' || !buildingComplete(pack,viewedSession(),neighbor.buildingId);
     button.addEventListener('click',()=>speak(neighbor.id));
     $('neighbors').append(button);
   }
@@ -537,7 +558,7 @@ function teleportTo(root,worldPoint) {
   const viewer=new THREE.Vector3();
   renderer.xr.getCamera().getWorldPosition(viewer);
   const local=root.worldToLocal(worldPoint.clone());
-  if(!canTeleport(pack,state,local,inside,currentCircuit.gateOpen)){
+  if(!canTeleport(pack,viewedSession(),local,inside,currentCircuit.gateOpen)){
     notify('Choose a clear patch of ground to teleport.');
     return;
   }
@@ -655,6 +676,31 @@ renderer.xr.addEventListener('sessionend',()=>{
   positionStage();refreshShelf();
   notify('Desktop view restored. Your progress is saved locally.');
 });
+function startPreview(){
+  if(mode!=='workshop')return;
+  $('welcome').hidden=true;
+  tourActive=true;
+  refreshPlaced();
+  setMode('explore');
+}
+function fitAssistedPiece(){
+  if(mode!=='workshop' || tourActive || !$('assist-enabled').checked)return;
+  const piece=getSelected();
+  if(!piece)return;
+  rotation=piece.target.rotation;
+  hovered=null;
+  // The assist is an intentional user action through the canonical placement rules.
+  placeAt(piece.target);
+}
+$('start-building').addEventListener('click',()=>{
+  $('welcome').hidden=true;
+  notify('Pick a piece on the right. No rush. You can open the preview at any time.');
+});
+$('welcome-preview').addEventListener('click',startPreview);
+$('preview-city').addEventListener('click',startPreview);
+$('end-preview').addEventListener('click',()=>setMode('workshop'));
+$('assist-enabled').addEventListener('change',refreshUI);
+$('fit-piece').addEventListener('click',fitAssistedPiece);
 $('rotate').addEventListener('click',turnPiece);
 $('enter-city').addEventListener('click',()=>setMode('explore'));
 $('return-workshop').addEventListener('click',()=>setMode('workshop'));
@@ -701,7 +747,7 @@ function desktopExploreStep(delta) {
   if(heldKeys.has('KeyA'))motion.sub(side);
   if(motion.lengthSq()) {
     motion.normalize().multiplyScalar(Math.min(delta,.05)*4);
-    const next=moveWalkable(pack,state,{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside,currentCircuit.gateOpen);
+    const next=moveWalkable(pack,viewedSession(),{x:camera.position.x,z:camera.position.z},{x:motion.x,z:motion.z},inside,currentCircuit.gateOpen);
     camera.position.x=next.x;
     camera.position.z=next.z;
   }
@@ -720,5 +766,6 @@ function animate() {
   renderer.render(scene,camera);
 }
 refreshPlaced();positionStage();refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
+$('welcome').hidden=state.placed.length>0 || progress(pack,state).complete;
 notify('Welcome to the workshop. Assemble the first block, one piece at a time.');
 renderer.setAnimationLoop(animate);

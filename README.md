@@ -21,7 +21,7 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
-## Play the Living Neighborhood (Rungs 1–3)
+## Play the Living Neighborhood (Rungs 1–4)
 
 The **Living Block** vertical slice uses the same strict `piecebypiece.city.v1` city-pack structure as The Commons.
 
@@ -35,6 +35,8 @@ Open the local address printed by Vite. The game bundles locally through `npm ru
 **Desktop:** Select an unplaced part in the right panel. Move your pointer across the board; the amber tile marks its target. Press **R** or Rotate to match orientation, then click the target tile. When all 12 pieces are built, click **Enter your city**. Use **WASD** to explore and **right mouse drag** to look. Meet **Celia**, **Jules**, and **Moss**. Talk to them in person or using the accessible right-hand panel, and complete the small parcel-and-seeds errand. Click the café and house entrance signs to go inside. Escape returns from rooms to the street and from the street to the workshop.
 
 **Quest/WebXR:** Use either trigger to select a part from the in-world shelf and place it on the small tabletop board. Use a grip to rotate parts and **NEXT PIECES** to browse the shelf. Once assembled, choose **ENTER CITY**. In Explore Mode, point at **clear ground** and trigger to teleport; grip snap-turns 45° around the viewer. Select citizens to talk and select the full dialogue panel to dismiss it. Select entrance and exit signs to enter and leave small building interiors. A city sign returns you to the workshop.
+
+**Rung 4: First Visitor Experience:** New players see a warm introduction and contextual instructions. An optional one-piece **placement assist** (disabled until explicitly enabled) makes the workshop accessible without bypassing canonical puzzle rules. **Preview finished neighborhood** is an unsaved tour: the player can explore completed 3D buildings and interior scenes before solving everything, but quest/power progression and local saves remain untouched. See [Rung 4 playtest](docs/RUNG4_FIRST_VISITOR.md).
 
 **Rung 3: City Systems:** After helping the three neighbors, reconnect the **Café Generator**, **House Relay**, and **Garden Relay** to light the lantern walk and open the **Commons Overlook**. Click or VR-trigger outdoor relay crystals, or use the right-hand Lantern Grid panel. Required infrastructure links depend on actual placed building parts. The overlook cannot be entered until opened and stays open permanently once restored. See [Rung 3 playtest](docs/RUNG3_CITY_SYSTEMS.md).
 
