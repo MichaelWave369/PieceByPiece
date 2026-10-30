@@ -3,12 +3,10 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {VRButton} from 'three/addons/webxr/VRButton.js';
 import pack from '../game/campaign/verdantia-skygarden.json';
 import harborPack from '../game/campaign/tidesreach-first-dock.json';
-import first from '../game/campaign/the-living-block.json';
-import firstSystems from '../game/campaign/living-block-systems.json';
 import {blankSession,restoreSession,nextUnplaced,tryPlace,progress,buildingComplete} from './core/puzzle.mjs';
 import {GARDEN_SAVE_KEY,readGardenAccess} from './core/campaign.mjs';
 import {SKY_GARDENERS as HARBOR_KEEPERS,interactGardener as interactKeeper,nextGardenTask as nextHarborTask} from './core/verdantia.mjs';
-import {gardenWalkable as harborWalkable,gardenMove as harborMove,gardenAnchor as harborAnchor,gardenTeleport,elevationAt,skywalkOpen} from './core/garden-nav.mjs';
+import {gardenWalkable as harborWalkable,gardenMove as harborMove,gardenAnchor as harborAnchor,gardenTeleport,skywalkOpen} from './core/garden-nav.mjs';
 import {makePiece,tilePosition,gridCoordinate,textPlane} from './render/prefabs.js';
 import {createNeighbor,createSpeechPanel} from './render/life.js';
 import {createGardenScenery as createHarborScenery,createGardenBuilding as createHarborBuilding,placeGardenBuilding as placeHarborBuilding} from './render/verdantia.js';
@@ -199,7 +197,7 @@ function redrawKeepers(){
  }
 }
 function updateMode(next){
- if(next==='explore'&&!progress(pack,state).complete)return feedback('Finish the dock’s 12 pieces to enter Tidesreach.');
+ if(next==='explore'&&!progress(pack,state).complete)return feedback('Finish Verdantia’s 12 pieces to enter the Skygarden.');
  mode=next;closeSpeech();
  const desktop=!xrActive;
  world.scale.setScalar(xrActive&&mode==='workshop'?.145:1);
@@ -396,7 +394,7 @@ renderer.xr.addEventListener('sessionstart',()=>{
 });
 renderer.xr.addEventListener('sessionend',()=>{
  xrActive=false;world.rotation.y=0;updateMode(mode);
- feedback('Back to the desktop view. Your harbor progress remains saved.');
+ feedback('Back to the desktop view. Your garden progress remains saved.');
 });
 $('harbor-rotate').addEventListener('click',rotate);
 $('harbor-guide').addEventListener('change',e=>{showGuide=e.target.checked;redrawGhost();});
