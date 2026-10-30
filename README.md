@@ -21,6 +21,16 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
+## Chapter Three: Verdantia, the Skygarden
+
+**After completing the public ferry in Tidesreach**, head to [the District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) and enter **Verdantia**. This third chapter adds twelve architectural pieces to restore the Seed Conservatory, community Wind Spire, and Commons Canopy Bridge.
+
+Meet **Pera, Sol, and Vale** to restore the garden's public infrastructure. Their ordered missions open a genuine **elevated skywalk** with a sloping ascent and height-aware walking / controller teleport. The game keeps Verdantia's construction and quest save **separate** from your first two city saves.
+
+Verdantia's planned public page after PR merge and successful GitHub Pages deployment: https://michaelwave369.github.io/PieceByPiece/verdantia.html
+
+The Vite Pages build and asset verification now include all **four** routes: Living Block, District Atlas, Tidesreach, and Verdantia. See [Rung 6 manual playtest](docs/RUNG6_VERDANTIA.md). The elevated path needs actual Quest 3 comfort testing; CI build success alone cannot guarantee that.
+
 ## District Atlas and Chapter Two: Tidesreach
 
 **Play the published campaign:** https://michaelwave369.github.io/PieceByPiece/  
@@ -31,7 +41,7 @@ The **District Atlas** distinguishes the two currently playable regions from the
 
 In **Tidesreach: The First Dock**, you assemble Starfall Lighthouse, Harbor Tea Room, and Community Boatyard from twelve new architectural pieces, walk around the restored coastline, meet Ida/Rowan/Finch, and reconnect a public ferry. The harbor supports desktop controls, a paginated controller-based Quest XR piece shelf, optional placement assistance and local progress persistence.
 
-The Vite production build includes `index.html`, `districts.html`, and `harbor.html` as separate static pages. See [Rung 5 playtest checklist](docs/RUNG5_TIDESREACH.md) for exact acceptance gates and the Quest 3 manual testing plan. The new pages go live **after** this PR is merged and the GitHub Pages deployment passes. This is still a prototype, not the full five-city campaign.
+The Vite production build includes `index.html`, `districts.html`, `harbor.html`, and `verdantia.html` as separate static pages. See [Rung 5 playtest checklist](docs/RUNG5_TIDESREACH.md) for exact acceptance gates and the Quest 3 manual testing plan. The new pages go live **after** this PR is merged and the GitHub Pages deployment passes. This is still a prototype, not the full five-city campaign.
 
 ## Play the Living Neighborhood (Rungs 1–5)
 
