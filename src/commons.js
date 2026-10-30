@@ -146,7 +146,17 @@ function startArchitect(){
    const next=editCommonsPack(pack,command);
    if(new TextEncoder().encode(JSON.stringify(next,null,2)+'\n').byteLength>MAX_PACK_BYTES)
     throw new Error('City is too large for a 64 KiB community pack');
-   pack=next;test=null;receipt=null;selected=null;showError=false;
+   // License acknowledgement changes attribution, not puzzle geometry/rules.
+   // Keep a completed playthrough valid when only license/rights changed.
+   const onlyRights=command.type==='affirm'||command.type==='license';
+   const preserve=onlyRights&&receipt&&receipt.signature===JSON.stringify(pack);
+   const priorTest=onlyRights&&test?.signature===JSON.stringify(pack);
+   pack=next;
+   if(preserve)receipt={...receipt,signature:JSON.stringify(pack)};
+   else receipt=null;
+   if(priorTest)test={...test,signature:JSON.stringify(pack)};
+   else test=null;
+   selected=null;showError=false;
    persist();refresh();
    signal('Saved locally. Playtest the updated design before exporting.');
   }catch(error){signal(error.message,true);}
