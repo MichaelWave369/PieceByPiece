@@ -212,7 +212,7 @@ function updateMode(next){
   if(mode==='workshop'){
    camera.position.set(14,18,18);controls.target.set(0,0,0);controls.update();
   }else{
-   camera.position.set(0,1.68,6.1);camera.rotation.order='YXZ';camera.rotation.set(0,0,0);
+   camera.position.set(-2.8,1.68,3.8);camera.rotation.order='YXZ';camera.rotation.set(0,0,0);
   }
  }
  redrawGhost();redrawKeepers();refreshShelf();refreshUI();
@@ -313,7 +313,11 @@ function rayAction(r,fromXR=false){
   const action=actionFrom(hit.object);
   if(action?.action==='piece')return select(action.data);
   if(action?.action==='rotate')return rotate();
-  if(action?.action==='page'){shelfPage++;refreshShelf();return;}
+  if(action?.action==='page'){
+    const remaining=pack.pieces.filter(p=>!state.placed.includes(p.id)).length;
+    shelfPage=(shelfPage+1)%Math.max(1,Math.ceil(remaining/5));
+    refreshShelf();return;
+   }
   if(action?.action==='explore')return updateMode('explore');
   if(action?.action==='return')return updateMode('workshop');
   if(action?.action==='atlas')return window.location.assign('./districts.html');
