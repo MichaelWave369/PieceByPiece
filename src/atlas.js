@@ -3,7 +3,8 @@ import def from '../game/campaign/living-block-systems.json';
 import harbor from '../game/campaign/tidesreach-first-dock.json';
 import garden from '../game/campaign/verdantia-skygarden.json';
 import iron from '../game/campaign/ironhaven-commons-rail.json';
-import {readFirstDistrictStatus,readHarborStatus,readGardenAccess,readGardenStatus,readIronAccess,readIronStatus} from './core/campaign.mjs';
+import citadel from '../game/campaign/citadel-common-ground.json';
+import {readFirstDistrictStatus,readHarborStatus,readGardenAccess,readGardenStatus,readIronAccess,readIronStatus,readCitadelAccess,readCitadelStatus} from './core/campaign.mjs';
 import './harbor.css';
 
 const $=id=>document.getElementById(id);
@@ -42,3 +43,15 @@ $('iron-status').textContent=!ironAccess.unlocked
 $('iron-link').textContent=ironAccess.unlocked
   ? 'Enter Ironhaven':'View Ironhaven unlock requirements';
 if(ironAccess.unlocked)$('atlas-summary').textContent='The Skygarden is restored. Ironhaven is ready to reclaim its railways.';
+
+const finalAccess=readCitadelAccess(window.localStorage,iron);
+const finalProgress=readCitadelStatus(window.localStorage,citadel);
+$('citadel-status').textContent=!finalAccess.unlocked
+ ? 'LOCKED · Restore the public freight railway in Ironhaven'
+ : finalProgress.complete?'VICTORY ✓ · The Commons Charter is ratified'
+   : finalProgress.built+' / '+finalProgress.total+' pieces · '+finalProgress.quests+' / '+finalProgress.totalQuests+' allies · '+finalProgress.manifest.publicCount+' / 3 public safeguards';
+$('citadel-link').textContent=finalAccess.unlocked
+ ? (finalProgress.complete?'Revisit Common Ground':'Enter the Corporate Citadel')
+ : 'View Citadel unlock requirements';
+if(finalProgress.complete)$('atlas-summary').textContent='The five-city campaign is restored! The Commons Charter now belongs to the people.';
+else if(finalAccess.unlocked)$('atlas-summary').textContent='Ironhaven’s public supplies reached the Citadel. It is time for the final restoration.';
