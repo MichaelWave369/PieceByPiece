@@ -21,7 +21,19 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
-## Play the Living Neighborhood (Rungs 1–4)
+## District Atlas and Chapter Two: Tidesreach
+
+**Play the published campaign:** https://michaelwave369.github.io/PieceByPiece/  
+**District Atlas:** https://michaelwave369.github.io/PieceByPiece/districts.html  
+**Tidesreach:** https://michaelwave369.github.io/PieceByPiece/harbor.html (chapter two, unlocked through campaign progress)
+
+The **District Atlas** distinguishes the two currently playable regions from the three future chapters. Finish The Living Block's twelve pieces, three errands and Lantern Grid to open Tidesreach. Chapter Two uses the exact same v1 puzzle-pack schema and canonical puzzle engine, with a completely separate browser-local save.
+
+In **Tidesreach: The First Dock**, you assemble Starfall Lighthouse, Harbor Tea Room, and Community Boatyard from twelve new architectural pieces, walk around the restored coastline, meet Ida/Rowan/Finch, and reconnect a public ferry. The harbor supports desktop controls, a paginated controller-based Quest XR piece shelf, optional placement assistance and local progress persistence.
+
+The Vite production build includes `index.html`, `districts.html`, and `harbor.html` as separate static pages. See [Rung 5 playtest checklist](docs/RUNG5_TIDESREACH.md) for exact acceptance gates and the Quest 3 manual testing plan. The new pages go live **after** this PR is merged and the GitHub Pages deployment passes. This is still a prototype, not the full five-city campaign.
+
+## Play the Living Neighborhood (Rungs 1–5)
 
 The **Living Block** vertical slice uses the same strict `piecebypiece.city.v1` city-pack structure as The Commons.
 
