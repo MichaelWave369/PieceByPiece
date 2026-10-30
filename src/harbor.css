@@ -53,3 +53,17 @@
 .citadel-epilogue a{display:block;padding:10px;border-radius:8px;background:#385d57;color:#fff1d7;text-decoration:none;text-align:center;font-size:12px}
 .district-tile.final-district{opacity:1;background:linear-gradient(145deg,#ced5df,#b8c2d8)}
 .district-tile.final-district a{background:#46556c}
+
+/* The Commons is a distinct post-campaign workshop, not a sixth city. */
+.commons-atlas-portal{margin-top:23px;padding:28px;display:flex;align-items:center;
+ justify-content:space-between;gap:25px;border-radius:20px;border:1px solid #e3e6b37e;
+ background:linear-gradient(125deg,#2a5a57,#1d454e);box-shadow:0 15px 32px #12303d3d}
+.commons-atlas-portal h2{font:700 29px Georgia,serif;margin:9px 0;color:#f6edcd}
+.commons-atlas-portal p{font-size:13px;line-height:1.55;max-width:630px;color:#d1e5db}
+.commons-atlas-portal #commons-access{color:#f4d9a4;font-size:11px;font-weight:800}
+.commons-atlas-portal a{display:inline-block;text-align:center;text-decoration:none;
+ background:#e9dfb5;color:#214f4b;min-width:225px;font-size:12px;font-weight:800;
+ padding:14px 17px;border-radius:11px}
+.citadel-epilogue a+a{margin-top:9px;background:#244d57}
+@media(max-width:760px){.commons-atlas-portal{display:block;padding:20px}
+ .commons-atlas-portal a{width:100%;margin-top:12px;min-width:0}}
