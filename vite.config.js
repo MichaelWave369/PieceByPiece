@@ -11,7 +11,8 @@ export default defineConfig({
     main:resolve('index.html'),
     atlas:resolve('districts.html'),
     harbor:resolve('harbor.html'),
-    verdantia:resolve('verdantia.html')
+    verdantia:resolve('verdantia.html'),
+    ironhaven:resolve('ironhaven.html')
    }
   }
  }
