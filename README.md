@@ -21,6 +21,18 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
+## The Commons Library · Rung 10
+
+The [Commons Library](https://michaelwave369.github.io/PieceByPiece/catalogue.html) adds **public discovery and play** for reviewed `piecebypiece.city.v1` community creations. Browsing and playing are available without finishing the campaign, while the creator Workshop still unlocks through the Citadel's public charter.
+
+The static `community/catalogue.json` and matching approved pack files are generated on each build from **only** the checked-in `community/packs/` repository directory. Entries carry SHA-256 checksums, byte counts, credits, tags, license, and bounds. The Community Player verifies downloaded bytes, metadata, schema and hashes **before** loading the scene. Both the catalogue and verified packs may be cached locally for reuse, but offline *reload* is not guaranteed without a service worker.
+
+**Play a reviewed city:** https://michaelwave369.github.io/PieceByPiece/play-community.html?id=lantern-lane
+
+You can also open an independently supplied, strict 64 KiB local JSON file in the Community Player. That file is plainly marked **LOCAL FILE · NOT CURATED** and cannot unlock any official campaign chapter. Each puzzle saves progress under a separate key containing its city ID and exact content checksum, so revisions never inherit each other's saves. Desktop and Quest VR tabletop interactions use the existing deterministic snap-and-mission engine.
+
+See [Rung 10: The Commons Library](docs/RUNG10_COMMONS_LIBRARY.md) for provenance rules, catalogue update workflow and playtest instructions. These are **reviewed, committed repository files**, not public automatic submissions or server accounts. All new pages become public only after merging and successful Pages deployment.
+
 ## The Commons Workshop · Rung 9
 
 **Once the Corporate Citadel's Common Ground Charter is ratified, the District Atlas unlocks a genuine city-creation workshop.** You can build your own 3D architecture puzzles, add small missions, then playtest them from an empty city before sharing.
