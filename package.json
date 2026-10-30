@@ -1,6 +1,6 @@
 {
   "name": "piece-by-piece",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Peaceful XR architectural puzzle adventure with optional asynchronous city pack sharing",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test",
-    "validate:packs": "node scripts/validate-community.mjs community/packs game/campaign/the-living-block.json game/campaign/tidesreach-first-dock.json game/campaign/verdantia-skygarden.json",
+    "validate:packs": "node scripts/validate-community.mjs community/packs game/campaign/the-living-block.json game/campaign/tidesreach-first-dock.json game/campaign/verdantia-skygarden.json game/campaign/ironhaven-commons-rail.json",
     "check": "npm test && npm run validate:packs",
     "validate:systems": "node --test tests/city-systems.test.mjs",
     "build:pages": "vite build --base=/PieceByPiece/",
