@@ -283,8 +283,12 @@ const returnSign=new THREE.Group();
 const returnButton=textPlane('RETURN TO WORKSHOP',1.9,.38);
 returnButton.userData={action:'workshop'};
 returnSign.add(returnButton);
-returnSign.position.set(0,2.4,-1.6);
+returnSign.position.set(-1.25,2.4,-1.6);
 cityRoot.add(returnSign);
+const atlasSign=textPlane('DISTRICT ATLAS',1.75,.36);
+atlasSign.userData={action:'atlas'};
+atlasSign.position.set(1.2,2.4,-1.6);
+cityRoot.add(atlasSign);
 
 function refreshNeighborhood() {
   discard(peopleRoot);
@@ -423,6 +427,7 @@ function positionStage() {
   workbench.visible=xrActive && mode==='workshop';
   ground.visible=!xrActive && mode==='workshop';
   returnSign.visible=mode==='explore' && !inside;
+  atlasSign.visible=mode==='explore' && !inside;
   systemsVisual.root.visible=mode==='explore' && !inside;
 }
 function refreshSystemControls(){
@@ -578,7 +583,7 @@ function snapTurnInPlace(amount) {
 }
 function handleRay(ray, controllerUse=false) {
   const targets=inside ? [interiorRoot]
-    : [boardPick,...(mode==='explore'?[returnSign,peopleRoot,doorsRoot,speechRoot,systemsVisual.root]:[]),
+    : [boardPick,...(mode==='explore'?[returnSign,atlasSign,peopleRoot,doorsRoot,speechRoot,systemsVisual.root]:[]),
        ...(xrActive?[shelf]:[])];
   const hits=ray.intersectObjects(targets,true);
   for(const hit of hits) {
@@ -592,6 +597,7 @@ function handleRay(ray, controllerUse=false) {
     }
     if(action?.action==='explore')return setMode('explore');
     if(action?.action==='workshop')return setMode('workshop');
+    if(action?.action==='atlas')return window.location.assign('./districts.html');
     if(action?.action==='talk')return speak(action.data);
     if(action?.action==='system')return toggleInfrastructure(action.data);
     if(action?.action==='close-dialogue')return closeDialogue();
