@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#174856">
+ <meta name="description" content="Tidesreach: The First Dock. The second city in PieceByPiece. Restore the lighthouse, tea room and public ferry.">
+ <title>Tidesreach · PieceByPiece</title>
+</head>
+<body class="harbor-page">
+ <div id="harbor-stage" aria-label="Interactive 3D harbor architectural puzzle"></div>
+ <main id="harbor-ui">
+  <header class="harbor-brand">
+   <a href="./districts.html">← District Atlas</a>
+   <span class="tiny-heading">PIECE BY PIECE · CHAPTER TWO</span>
+   <h1>TIDESREACH</h1>
+   <p>THE FIRST DOCK</p>
+  </header>
+  <aside class="harbor-panel" aria-label="Tidesreach gameplay controls">
+   <div class="harbor-topline"><strong id="harbor-mode">Architect's Table</strong><span id="harbor-count">0 / 12</span></div>
+   <div class="harbor-progress" role="progressbar" aria-label="Pieces assembled" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"><div id="harbor-fill"></div></div>
+   <p id="harbor-message" class="harbor-message">The coast needs its buildings rebuilt, one piece at a time.</p>
+   <section id="harbor-workshop">
+    <h2>BUILDINGS TO RESTORE</h2>
+    <div id="harbor-buildings"></div>
+    <h2>SELECT A PIECE <span id="harbor-rotation">0°</span></h2>
+    <div id="harbor-tray" class="harbor-tray"></div>
+    <button id="harbor-rotate" class="harbor-subtle" type="button">↻ Rotate selected piece (R)</button>
+    <label class="harbor-check"><input type="checkbox" id="harbor-guide" checked> Show gentle placement hints</label>
+    <label class="harbor-check"><input type="checkbox" id="harbor-assist"> Enable one-piece assistance</label>
+    <button id="harbor-fit" type="button" disabled>Fit selected piece (assisted)</button>
+   </section>
+   <section id="harbor-explore" hidden>
+    <h2>THREE KINDNESSES</h2>
+    <p id="harbor-next-task"></p>
+    <div id="harbor-keepers" class="harbor-tray"></div>
+    <ul id="harbor-quests"></ul>
+    <div id="harbor-dialogue" hidden>
+      <strong id="harbor-speaker"></strong>
+      <p id="harbor-dialogue-text"></p>
+      <button type="button" id="harbor-close-dialogue">Close conversation</button>
+    </div>
+   </section>
+   <button type="button" id="harbor-enter" class="harbor-primary" disabled>✦ Enter your harbor</button>
+   <button type="button" id="harbor-return" class="harbor-primary" hidden>Return to the architect's table</button>
+   <p class="harbor-small">Local saves · No timers · No accounts</p>
+   <button id="harbor-reset" type="button" class="harbor-text-button">Restart this harbor only</button>
+   <div id="harbor-vr"></div>
+  </aside>
+  <section id="harbor-locked" class="harbor-locked" hidden aria-label="Tidesreach locked">
+   <div class="tiny-heading">THE COAST IS CALLING</div>
+   <h2>Restore the first city to reach Tidesreach.</h2>
+   <p>Finish the Living Block's buildings and three neighbor errands, then reconnect the Lantern Grid to open the Commons Overlook. Your journey to the coast begins there.</p>
+   <a href="./index.html">Return to The Living Block</a>
+   <a href="./districts.html">See District Atlas</a>
+   <p class="harbor-small">Already restored it? Return to the Atlas, or reload this page after your save is updated.</p>
+  </section>
+  <footer class="harbor-footer">OUR CITIES BELONG TO EVERYONE · THE COMMONS AWAITS</footer>
+ </main>
+ <span id="harbor-live" class="sr-only" role="status" aria-live="polite"></span>
+ <script type="module" src="/src/harbor.js"></script>
+</body>
+</html>
