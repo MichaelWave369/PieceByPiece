@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#183f43">
+ <meta name="description" content="The Commons Workshop: create, playtest, import and share your own safe PieceByPiece 3D city puzzles without accounts.">
+ <title>The Commons Workshop · PieceByPiece</title>
+</head>
+<body class="commons-page">
+ <header class="commons-header">
+  <a href="./districts.html">← District Atlas</a>
+  <div><span class="tiny-heading">PIECE BY PIECE · COMMUNITY MODE</span><h1>THE COMMONS <em>WORKSHOP</em></h1>
+    <p>One little city becomes a world of shared creations.</p></div>
+  <a href="./citadel.html">Revisit the finale</a>
+ </header>
+ <section id="commons-locked" class="commons-locked" hidden aria-label="Commons campaign unlock">
+  <span class="tiny-heading">EARNED BY RESTORING THE CITIES</span>
+  <h2>The Commons opens after the Corporate Citadel.</h2>
+  <p>Build all five cities and ratify the Common Ground Charter to unlock your own city-creation workshop. Your campaign progress stays on this device.</p>
+  <a href="./districts.html">Continue your campaign</a>
+ </section>
+ <div id="commons-app" class="commons-layout" hidden>
+  <aside class="commons-sidebar" aria-label="Architect tools">
+   <div class="commons-section">
+    <div class="commons-tabs" role="group" aria-label="Workshop mode">
+     <button id="mode-design" class="active" type="button" aria-pressed="true">1 · Design</button>
+     <button id="mode-test" type="button" aria-pressed="false">2 · Playtest</button>
+    </div>
+    <p id="commons-feedback" role="status" aria-live="polite">Your city is saved in this browser.</p>
+   </div>
+   <section id="design-tools">
+    <div class="commons-section">
+     <h2>CITY IDENTITY</h2>
+     <label>City title <input id="city-title" maxlength="80" type="text" autocomplete="off"></label>
+     <label>Creator display name <input id="city-creator" maxlength="40" type="text" autocomplete="off"></label>
+     <label>Description <textarea id="city-description" maxlength="400" rows="2"></textarea></label>
+     <div class="commons-grid-2">
+       <label>Environment <select id="city-theme"></select></label>
+       <label>Difficulty <select id="city-difficulty"></select></label>
+     </div>
+    </div>
+    <div class="commons-section">
+     <h2>BUILDINGS <span id="building-total"></span></h2>
+     <div id="building-list"></div>
+     <label>Add a building <input id="new-building-name" type="text" maxlength="60" placeholder="Community Library"></label>
+     <button type="button" id="add-building">+ Add building with a foundation</button>
+    </div>
+    <div class="commons-section">
+     <h2>ARCHITECT'S PIECE PALETTE <span id="piece-total"></span></h2>
+     <p class="commons-help">Pick a building and piece, then click an open square on the 3D grid. Rotate or change layers to stack architecture.</p>
+     <label>Build for <select id="piece-building"></select></label>
+     <div class="commons-grid-2">
+      <label>Shape <select id="piece-prefab"></select></label>
+      <label>Level <select id="piece-level"><option value="0">Ground · 0</option><option value="1">Upper · 1</option><option value="2">Upper · 2</option><option value="3">Upper · 3</option></select></label>
+      <label>Rotation <select id="piece-rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+     </div>
+     <div id="piece-list" class="commons-scroll"></div>
+    </div>
+    <div class="commons-section">
+     <h2>SMALL COMMUNITY MISSIONS <span id="mission-total"></span></h2>
+     <div id="mission-list"></div>
+     <label>Mission name <input id="mission-title" maxlength="80" type="text" placeholder="Visit the new library"></label>
+     <button id="add-mission" type="button">+ Add visit mission</button>
+    </div>
+   </section>
+   <section id="test-tools" hidden>
+    <div class="commons-section">
+     <h2>PLAY THE REAL PUZZLE</h2>
+     <p class="commons-help">This starts from an empty city using the same deterministic placement and mission rules as the campaign. It never affects campaign saves.</p>
+     <p id="test-progress">0 / 0 pieces</p>
+     <div id="test-pieces" class="commons-scroll"></div>
+     <label>Test rotation <select id="test-rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+     <button id="test-fit" type="button">Fit selected piece (assisted)</button>
+     <h2>TEST MISSIONS</h2>
+     <div id="test-missions"></div>
+     <button id="restart-test" type="button">↻ Restart playtest from zero</button>
+     <p id="test-completion" class="commons-help"></p>
+    </div>
+   </section>
+   <section class="commons-section commons-share">
+    <h2>SHARE YOUR WORK</h2>
+    <p id="draft-validity" class="commons-help"></p>
+    <label>Sharing license <select id="commons-license"><option value="CC0-1.0">CC0 1.0 · Public domain dedication</option><option value="CC-BY-4.0">CC BY 4.0 · Attribution required</option></select></label>
+    <label class="commons-check"><input id="commons-rights" type="checkbox"> I own this design or have permission to share all of its content under the selected license.</label>
+    <p id="receipt-status" class="commons-help">A completed playtest is required to export.</p>
+    <button id="export-pack" type="button">Export validated city JSON</button>
+    <label class="commons-import">Import a city JSON (≤64 KiB) <input id="import-pack" type="file" accept=".json,application/json"></label>
+    <button id="load-example" type="button">Explore the curated Lantern Lane example</button>
+    <p class="commons-help">Export is local only. Sharing is manual via the downloaded file or a reviewed GitHub pull request. No automatic publication, uploads, or accounts.</p>
+   </section>
+  </aside>
+  <main class="commons-viewport">
+   <div class="commons-hud">
+    <span id="view-city">MY FIRST COMMONS</span>
+    <span id="view-mode">BUILD MODE</span>
+   </div>
+   <div id="commons-3d" aria-label="Interactive 3D Commons city grid"></div>
+   <div class="commons-stage-guide" id="stage-guide">Drag to orbit · Scroll to zoom · Click open ground to add a piece</div>
+   <div id="vr-preview"></div>
+  </main>
+ </div>
+ <script type="module" src="/src/commons.js"></script>
+</body>
+</html>
