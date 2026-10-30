@@ -1,6 +1,6 @@
 {
   "name": "piece-by-piece",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "description": "Peaceful XR architectural puzzle adventure with optional asynchronous city pack sharing",
   "type": "module",

@@ -13,7 +13,8 @@ export default defineConfig({
     harbor:resolve('harbor.html'),
     verdantia:resolve('verdantia.html'),
     ironhaven:resolve('ironhaven.html'),
-    citadel:resolve('citadel.html')
+    citadel:resolve('citadel.html'),
+    commons:resolve('commons.html')
    }
   }
  }

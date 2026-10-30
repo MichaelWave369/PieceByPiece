@@ -55,3 +55,9 @@ $('citadel-link').textContent=finalAccess.unlocked
  : 'View Citadel unlock requirements';
 if(finalProgress.complete)$('atlas-summary').textContent='The five-city campaign is restored! The Commons Charter now belongs to the people.';
 else if(finalAccess.unlocked)$('atlas-summary').textContent='Ironhaven’s public supplies reached the Citadel. It is time for the final restoration.';
+
+$('commons-access').textContent=finalProgress.complete
+ ? 'UNLOCKED ✓ · Your creations belong to you'
+ : 'LOCKED · Ratify Knowledge, Connection and Consent in the Citadel';
+$('commons-link').textContent=finalProgress.complete
+ ? 'Enter The Commons Workshop':'View The Commons requirements';
