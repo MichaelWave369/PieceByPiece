@@ -40,11 +40,11 @@ function loadCharter(){
  catch{return blankCharter(pack);}
 }
 let charter=loadCharter();
-let charterView=charterStatus(pack,state,rail);
+let charterView=charterStatus(pack,state,charter);
 function saveCharter(){
  if(!canPlay)return;
- try{localStorage.setItem(CITADEL_CHARTER_KEY,JSON.stringify(rail));}
- catch{feedback('Rail junctions could not be saved locally.');}
+ try{localStorage.setItem(CITADEL_CHARTER_KEY,JSON.stringify(charter));}
+ catch{feedback('Charter safeguards could not be saved locally.');}
 }
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0xa6a9bc);
@@ -209,7 +209,7 @@ function redrawKeepers(){
  }
 }
 function updateMode(next){
- if(next==='explore'&&!progress(pack,state).complete)return feedback('Finish the Citadel's 12 pieces before entering the final city.');
+ if(next==='explore'&&!progress(pack,state).complete)return feedback('Finish all 12 Citadel pieces before entering the final city.');
  mode=next;closeSpeech();
  const desktop=!xrActive;
  world.scale.setScalar(xrActive&&mode==='workshop'?.145:1);
@@ -341,7 +341,7 @@ function actionFrom(object){
 function teleport(worldPoint){
  const local=world.worldToLocal(worldPoint.clone());
  if(!citadelTeleport(pack,state,local,charterView.gateOpen)){
-  feedback('Choose a clear spot. The Citizens' Forum opens after releasing the public charter.');
+  feedback('Choose a clear spot. The public forum opens after releasing the charter.');
   return;
  }
  const viewer=new THREE.Vector3();renderer.xr.getCamera().getWorldPosition(viewer);
@@ -446,7 +446,7 @@ $('harbor-return').addEventListener('click',()=>updateMode('workshop'));
 $('harbor-close-dialogue').addEventListener('click',closeSpeech);
 $('harbor-reset').addEventListener('click',()=>{
  if(!canPlay||!confirm('Restart the Citadel only? The four previous cities will remain untouched.'))return;
- state=blankSession(pack);save();rail=blankCharter(pack);saveCharter();selected=nextUnplaced(pack,state)?.id||null;
+ state=blankSession(pack);save();charter=blankCharter(pack);saveCharter();selected=nextUnplaced(pack,state)?.id||null;
  rotation=0;hover=null;redrawBuildings();updateMode('workshop');
  feedback('The Citadel workshop is ready for a fresh start.');
 });
