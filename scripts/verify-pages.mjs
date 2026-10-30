@@ -6,7 +6,7 @@ import {existsSync,readFileSync} from 'node:fs';
 import {resolve,sep} from 'node:path';
 
 const folder=resolve('dist'),expected='/PieceByPiece/';
-const pages=['index.html','districts.html','harbor.html'];
+const pages=['index.html','districts.html','harbor.html','verdantia.html'];
 let failed=false;
 function fail(message){failed=true;process.stderr.write('PAGES VERIFY FAILED: '+message+'\n');}
 for(const page of pages){
@@ -31,4 +31,4 @@ for(const page of pages){
  process.stdout.write('Checked '+page+' ('+paths.length+' asset links)\n');
 }
 if(failed)process.exitCode=1;
-else process.stdout.write('PASS: three complete linked campaign pages under '+expected+'\n');
+else process.stdout.write('PASS: four complete linked campaign pages under '+expected+'\n');
