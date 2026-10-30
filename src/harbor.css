@@ -19,3 +19,18 @@
 .verdantia-page .harbor-footer{color:#2c664a}
 .district-tile.verdantia{background:linear-gradient(145deg,#d8ebcf,#c3e3c5)}
 .district-tile.verdantia a{background:#33694b}
+
+/* Ironhaven: industrial warmth without a corporate dark-pattern UI. */
+.ironhaven-page{background:#aabdc1}
+.ironhaven-page .harbor-brand{color:#314651}
+.ironhaven-page .harbor-panel{background:linear-gradient(145deg,#3f5661f7,#283e4afa);border-color:#f7d1aa8c}
+.ironhaven-page .harbor-primary{background:#f0bf81;color:#303c42}
+.ironhaven-page .harbor-primary:hover:not(:disabled){background:#ffd6a2}
+.ironhaven-page #harbor-fill{background:linear-gradient(90deg,#91c3b3,#eebd7d)}
+.ironhaven-page .harbor-footer{color:#4b5e65}
+.ironhaven-page #iron-rail-section{border-top:1px solid #e4c29b69;margin-top:18px;padding-top:5px}
+.ironhaven-page .iron-rail-help{font-size:11px;line-height:1.6;color:#e0ded6}
+.ironhaven-page #iron-rail-result{font-size:11px;line-height:1.6;border-left:3px solid #f0bf81;padding:9px 10px;background:#ffffff14}
+.ironhaven-page #iron-rail-controls{grid-template-columns:1fr}
+.district-tile.ironhaven{background:linear-gradient(145deg,#d5dcdd,#bacbcd)}
+.district-tile.ironhaven a{background:#52626a}
