@@ -396,7 +396,7 @@ function setMode(value) {
   positionStage();
   refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
   notify(value==='explore'
-    ? 'Welcome to The Living Block. Meet Celia, Jules, and Moss.'
+    ? (tourActive?'Preview only. Your puzzle and quest saves remain untouched.':'Welcome to The Living Block. Meet Celia, Jules, and Moss.')
     : 'Back to the workshop. No timers, no pressure.');
 }
 function positionStage() {
@@ -435,6 +435,7 @@ function refreshSystemControls(){
     : currentCircuit.lampsOn
       ? 'The lanterns glow. One more connection will open the Commons Overlook.'
       : 'Help your neighbors, then activate the three outdoor relays to route power along the street.';
+  if(tourActive) $('power-message').textContent='This is an unsaved visual preview. Restore the real neighborhood to power its lanterns.';
   $('overlook-message').replaceChildren();
   const label=document.createTextNode('COMMONS OVERLOOK ');
   const detail=document.createElement('strong');
@@ -519,7 +520,7 @@ function refreshUI() {
     const button=document.createElement('button');
     button.type='button';
     button.textContent='Talk to '+neighbor.name+(done?' ✓':'');
-    button.disabled=mode!=='explore' || !buildingComplete(pack,state,neighbor.buildingId);
+    button.disabled=mode!=='explore' || !buildingComplete(pack,viewedSession(),neighbor.buildingId);
     button.addEventListener('click',()=>speak(neighbor.id));
     $('neighbors').append(button);
   }
@@ -675,6 +676,31 @@ renderer.xr.addEventListener('sessionend',()=>{
   positionStage();refreshShelf();
   notify('Desktop view restored. Your progress is saved locally.');
 });
+function startPreview(){
+  if(mode!=='workshop')return;
+  $('welcome').hidden=true;
+  tourActive=true;
+  refreshPlaced();
+  setMode('explore');
+}
+function fitAssistedPiece(){
+  if(mode!=='workshop' || tourActive || !$('assist-enabled').checked)return;
+  const piece=getSelected();
+  if(!piece)return;
+  rotation=piece.target.rotation;
+  hovered=null;
+  // The assist is an intentional user action through the canonical placement rules.
+  placeAt(piece.target);
+}
+$('start-building').addEventListener('click',()=>{
+  $('welcome').hidden=true;
+  notify('Pick a piece on the right. No rush. You can open the preview at any time.');
+});
+$('welcome-preview').addEventListener('click',startPreview);
+$('preview-city').addEventListener('click',startPreview);
+$('end-preview').addEventListener('click',()=>setMode('workshop'));
+$('assist-enabled').addEventListener('change',refreshUI);
+$('fit-piece').addEventListener('click',fitAssistedPiece);
 $('rotate').addEventListener('click',turnPiece);
 $('enter-city').addEventListener('click',()=>setMode('explore'));
 $('return-workshop').addEventListener('click',()=>setMode('workshop'));
@@ -740,5 +766,6 @@ function animate() {
   renderer.render(scene,camera);
 }
 refreshPlaced();positionStage();refreshHint();refreshGhost();refreshNeighborhood();refreshUI();refreshShelf();
+$('welcome').hidden=state.placed.length>0 || progress(pack,state).complete;
 notify('Welcome to the workshop. Assemble the first block, one piece at a time.');
 renderer.setAnimationLoop(animate);
