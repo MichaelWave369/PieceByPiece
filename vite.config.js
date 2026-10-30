@@ -14,7 +14,9 @@ export default defineConfig({
     verdantia:resolve('verdantia.html'),
     ironhaven:resolve('ironhaven.html'),
     citadel:resolve('citadel.html'),
-    commons:resolve('commons.html')
+    commons:resolve('commons.html'),
+    catalogue:resolve('catalogue.html'),
+    communityPlayer:resolve('play-community.html')
    }
   }
  }
