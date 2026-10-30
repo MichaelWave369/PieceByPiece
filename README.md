@@ -21,6 +21,18 @@ After finishing the campaign, players unlock **The Commons**, an asynchronous, p
 
 The game publishes from a tested GitHub Actions workflow after changes merge to `main`. For first-time setup, in repository **Settings → Pages**, choose **GitHub Actions** as the publishing source. Follow [the Pages deployment guide](docs/GITHUB_PAGES.md) for the exact steps and Quest 3 checks. The site serves the game directly over HTTPS; it does not require a separate account or game download. Game progress remains in your browser, not on GitHub servers.
 
+## Chapter Four: Ironhaven, the Commons Rail
+
+After fully restoring Verdantia's public skywalk, the [District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) unlocks **Ironhaven**. This fourth playable city adds twelve industrial building pieces, a Salvage Workshop, a Community Foundry and a Commons Rail Terminal. Help **Rook, Ada and Jun** recover tools and return public dispatch to the workers.
+
+**New gameplay:** route three rail junctions from CORPORATE toward the COMMONS. Each needs its own rebuilt piece and neighbor errand. Connecting the public supply line starts a small freight train and opens a Commons Freight Yard with safe, collision-aware exploration. Routing is completely untimed and controlled through either in-world desktop/WebXR stations or accessible desktop buttons.
+
+Ironhaven saves its construction, missions and rail switches in independent versioned browser-local keys. The previous three chapter saves are unchanged.
+
+**Planned URL after merge and successful Pages deployment:** https://michaelwave369.github.io/PieceByPiece/ironhaven.html
+
+See [Rung 7 playtest and known limits](docs/RUNG7_IRONHAVEN.md). The code is unit- and build-tested; physical Quest 3 control and comfort testing remains manual. The Corporate Citadel finale is **not yet playable**.
+
 ## Chapter Three: Verdantia, the Skygarden
 
 **After completing the public ferry in Tidesreach**, head to [the District Atlas](https://michaelwave369.github.io/PieceByPiece/districts.html) and enter **Verdantia**. This third chapter adds twelve architectural pieces to restore the Seed Conservatory, community Wind Spire, and Commons Canopy Bridge.

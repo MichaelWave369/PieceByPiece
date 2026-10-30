@@ -4,6 +4,7 @@
  */
 import { restoreSession, progress } from './puzzle.mjs';
 import { restoreCitySystems, circuitStatus } from './city-systems.mjs';
+import {restoreRail,railStatus} from './rail-routing.mjs';
 
 export const FIRST_SAVE_KEY='piece-by-piece:campaign:the-living-block:v1';
 export const FIRST_SYSTEMS_SAVE_KEY='piece-by-piece:systems:the-living-block:v1';
@@ -61,4 +62,30 @@ export function readGardenStatus(storage,gardenPack) {
   const p=progress(gardenPack,session);
   return {session,built:p.placed,total:p.total,quests:p.missions,totalQuests:p.totalMissions,
     complete:p.complete&&p.missions===p.totalMissions};
+}
+
+export const IRON_SAVE_KEY='piece-by-piece:campaign:ironhaven-commons-rail:v1';
+export const IRON_RAIL_SAVE_KEY='piece-by-piece:rail:ironhaven-commons-rail:v1';
+
+/** The Skygarden's restored public skywalk is the prerequisite for Ironhaven. */
+export function readIronAccess(storage,gardenPack){
+ const garden=readGardenStatus(storage,gardenPack);
+ return {unlocked:garden.complete,built:garden.built,total:garden.total,
+  missions:garden.quests,totalMissions:garden.totalQuests};
+}
+/**
+ * Rail read is derived from canonical construction/quest progress plus a
+ * separately versioned rail-switch save. No legacy chapter save is mutated.
+ */
+export function readIronStatus(storage,ironPack){
+ let raw=null,rawRail=null;
+ try{raw=JSON.parse(storage.getItem(IRON_SAVE_KEY));}catch{}
+ try{rawRail=JSON.parse(storage.getItem(IRON_RAIL_SAVE_KEY));}catch{}
+ const session=restoreSession(ironPack,raw);
+ const p=progress(ironPack,session);
+ const rail=restoreRail(ironPack,rawRail);
+ const status=railStatus(ironPack,session,rail);
+ return {session,rail,route:status,built:p.placed,total:p.total,
+  quests:p.missions,totalQuests:p.totalMissions,
+  complete:p.complete&&p.missions===p.totalMissions&&status.delivered};
 }

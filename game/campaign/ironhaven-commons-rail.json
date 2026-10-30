@@ -1,0 +1,197 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "ironhaven-commons-rail",
+    "title": "Ironhaven: The Commons Rail",
+    "creator": "Piece by Piece",
+    "description": "Rebuild the salvage workshop, community foundry and public rail terminal, then redirect the city's freight lines from private profit to common supply.",
+    "difficulty": "thoughtful",
+    "estimatedMinutes": 30,
+    "tags": [
+      "campaign",
+      "industrial",
+      "chapter-four",
+      "railway"
+    ]
+  },
+  "city": {
+    "theme": "industrial",
+    "grid": {
+      "width": 16,
+      "height": 16
+    },
+    "seed": 369004
+  },
+  "buildings": [
+    {
+      "id": "salvage",
+      "name": "Salvage Workshop"
+    },
+    {
+      "id": "foundry",
+      "name": "Community Foundry"
+    },
+    {
+      "id": "terminal",
+      "name": "Commons Rail Terminal"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "salvage-foundation",
+      "buildingId": "salvage",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "salvage-wall",
+      "buildingId": "salvage",
+      "prefab": "wall",
+      "target": {
+        "x": 4,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "salvage-door",
+      "buildingId": "salvage",
+      "prefab": "door",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "salvage-roof",
+      "buildingId": "salvage",
+      "prefab": "roof",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "foundry-foundation",
+      "buildingId": "foundry",
+      "prefab": "foundation",
+      "target": {
+        "x": 12,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "foundry-tower",
+      "buildingId": "foundry",
+      "prefab": "tower",
+      "target": {
+        "x": 12,
+        "y": 4,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "foundry-gear",
+      "buildingId": "foundry",
+      "prefab": "lamp",
+      "target": {
+        "x": 11,
+        "y": 4,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "foundry-stairs",
+      "buildingId": "foundry",
+      "prefab": "stairs",
+      "target": {
+        "x": 12,
+        "y": 5,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "terminal-foundation",
+      "buildingId": "terminal",
+      "prefab": "foundation",
+      "target": {
+        "x": 11,
+        "y": 11,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "terminal-bridge",
+      "buildingId": "terminal",
+      "prefab": "bridge",
+      "target": {
+        "x": 10,
+        "y": 11,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "terminal-track",
+      "buildingId": "terminal",
+      "prefab": "road",
+      "target": {
+        "x": 11,
+        "y": 10,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "terminal-lamp",
+      "buildingId": "terminal",
+      "prefab": "lamp",
+      "target": {
+        "x": 12,
+        "y": 11,
+        "z": 0,
+        "rotation": 180
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "restore-salvage",
+      "title": "Recover the city's shared spare parts",
+      "kind": "inspect-building",
+      "buildingId": "salvage"
+    },
+    {
+      "id": "restart-foundry",
+      "title": "Make the foundry a worker cooperative",
+      "kind": "visit-building",
+      "buildingId": "foundry"
+    },
+    {
+      "id": "release-rail",
+      "title": "Return rail controls to the public",
+      "kind": "inspect-building",
+      "buildingId": "terminal"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}
