@@ -1,0 +1,197 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "verdantia-skygarden",
+    "title": "Verdantia: The Skygarden",
+    "creator": "Piece by Piece",
+    "description": "Wake the seed conservatory, restore the wind spire, and reconnect a raised garden walkway so everyone can enjoy the canopy.",
+    "difficulty": "thoughtful",
+    "estimatedMinutes": 25,
+    "tags": [
+      "campaign",
+      "garden",
+      "chapter-three",
+      "skywalk"
+    ]
+  },
+  "city": {
+    "theme": "garden",
+    "grid": {
+      "width": 14,
+      "height": 14
+    },
+    "seed": 9369
+  },
+  "buildings": [
+    {
+      "id": "seedhouse",
+      "name": "The Seed Conservatory"
+    },
+    {
+      "id": "windspire",
+      "name": "The Wind Spire"
+    },
+    {
+      "id": "canopy",
+      "name": "The Commons Canopy Bridge"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "seed-foundation",
+      "buildingId": "seedhouse",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "seed-wall",
+      "buildingId": "seedhouse",
+      "prefab": "wall",
+      "target": {
+        "x": 4,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "seed-garden",
+      "buildingId": "seedhouse",
+      "prefab": "garden",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "seed-roof",
+      "buildingId": "seedhouse",
+      "prefab": "roof",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "wind-foundation",
+      "buildingId": "windspire",
+      "prefab": "foundation",
+      "target": {
+        "x": 10,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "wind-tower",
+      "buildingId": "windspire",
+      "prefab": "tower",
+      "target": {
+        "x": 10,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "wind-lamp",
+      "buildingId": "windspire",
+      "prefab": "lamp",
+      "target": {
+        "x": 11,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "wind-stairs",
+      "buildingId": "windspire",
+      "prefab": "stairs",
+      "target": {
+        "x": 10,
+        "y": 4,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "canopy-foundation",
+      "buildingId": "canopy",
+      "prefab": "foundation",
+      "target": {
+        "x": 11,
+        "y": 9,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "canopy-bridge",
+      "buildingId": "canopy",
+      "prefab": "bridge",
+      "target": {
+        "x": 11,
+        "y": 10,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "canopy-lamp",
+      "buildingId": "canopy",
+      "prefab": "lamp",
+      "target": {
+        "x": 12,
+        "y": 9,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "canopy-garden",
+      "buildingId": "canopy",
+      "prefab": "garden",
+      "target": {
+        "x": 10,
+        "y": 9,
+        "z": 0,
+        "rotation": 0
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "restore-seeds",
+      "title": "Wake the seed conservatory",
+      "kind": "inspect-building",
+      "buildingId": "seedhouse"
+    },
+    {
+      "id": "awaken-wind",
+      "title": "Restart the community wind spire",
+      "kind": "inspect-building",
+      "buildingId": "windspire"
+    },
+    {
+      "id": "open-skywalk",
+      "title": "Reconnect the public skywalk",
+      "kind": "visit-building",
+      "buildingId": "canopy"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}

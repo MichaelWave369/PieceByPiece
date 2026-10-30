@@ -37,3 +37,28 @@ export function readHarborStatus(storage,harborPack){
   const p=progress(harborPack,session);
   return {session,built:p.placed,total:p.total,quests:p.missions,totalQuests:p.totalMissions,complete:p.complete && p.missions===p.totalMissions};
 }
+
+export const GARDEN_SAVE_KEY='piece-by-piece:campaign:verdantia-skygarden:v1';
+
+/**
+ * Chapter 3 unlocks by restoring the complete public-ferry storyline.
+ * This consumes the existing chapter-2 save, not a separate unlock boolean.
+ */
+export function readGardenAccess(storage,harborPack) {
+  const coast=readHarborStatus(storage,harborPack);
+  return {
+    unlocked:coast.complete,
+    harborPieces:coast.built,
+    harborTotal:coast.total,
+    harborMissions:coast.quests,
+    harborTotalMissions:coast.totalQuests,
+  };
+}
+export function readGardenStatus(storage,gardenPack) {
+  let raw=null;
+  try{raw=JSON.parse(storage.getItem(GARDEN_SAVE_KEY));}catch{}
+  const session=restoreSession(gardenPack,raw);
+  const p=progress(gardenPack,session);
+  return {session,built:p.placed,total:p.total,quests:p.missions,totalQuests:p.totalMissions,
+    complete:p.complete&&p.missions===p.totalMissions};
+}

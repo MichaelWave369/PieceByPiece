@@ -7,3 +7,15 @@
 .atlas-page{min-height:100vh;background:radial-gradient(circle at 30% 12%,#557a76,#234b56 56%,#142e40)}.atlas-shell{max-width:1160px;margin:auto;padding:36px clamp(19px,5vw,68px)}.atlas-header a{color:#f7dcaf}.atlas-header h1{font:700 clamp(31px,5vw,61px) Georgia,serif;letter-spacing:-.04em;margin:10px 0}.atlas-header p{color:#d7e7dc}#atlas-summary{border-top:1px solid #c8dbc75d;border-bottom:1px solid #c8dbc75d;margin:27px 0;padding:15px 0;font-size:13px;color:#f6dfb1}.district-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:16px}.district-tile{min-height:275px;display:flex;flex-direction:column;padding:27px;border-radius:18px;border:1px solid #fff4e361;color:#27505b;background:linear-gradient(145deg,#e9f0e5,#c9e0db);box-shadow:0 15px 32px #0f2c394a}.district-number{font-size:10px;letter-spacing:.16em;font-weight:800;color:#688581}.district-tile h2{font:700 28px Georgia,serif;margin:14px 0}.district-tile p{font-size:12px;line-height:1.65}.district-status{font-size:11px!important;font-weight:800;margin-top:auto;color:#486d69}.district-tile a{background:#265661;color:#fff4df;text-align:center;text-decoration:none;font-size:12px;font-weight:800;padding:12px;border-radius:9px}.district-tile.second{background:linear-gradient(145deg,#cce8e9,#d9e9df)}.district-tile.future{opacity:.79}.final-district{background:linear-gradient(145deg,#b7cad1,#9fb2bd)}.atlas-footer{font-size:12px;color:#c2d6cb;padding-top:25px}
 @media(max-width:760px){.harbor-brand{top:12px;left:12px}.harbor-brand h1{font-size:30px}.harbor-brand p{display:none}.harbor-brand a{margin-bottom:2px}.harbor-brand .tiny-heading{font-size:8px}.harbor-panel{top:90px;right:8px;max-height:calc(100vh - 100px);width:min(286px,calc(100vw - 16px));padding:14px}.harbor-tray{max-height:110px}.harbor-footer{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Chapter 3: Verdantia — a lighter public garden rather than a harbor repaint. */
+.verdantia-page{background:#b5d9c5}
+.verdantia-page .harbor-brand{color:#245443}
+.verdantia-page .harbor-panel{background:linear-gradient(145deg,#275c48f7,#234a42f7);border-color:#dff5c16a}
+.verdantia-page .harbor-primary{background:#dceca9;color:#295044}
+.verdantia-page .harbor-primary:hover:not(:disabled){background:#efffc1}
+.verdantia-page .harbor-progress{background:#1b493c}
+.verdantia-page #harbor-fill{background:linear-gradient(90deg,#95dab7,#dfed96)}
+.verdantia-page .harbor-footer{color:#2c664a}
+.district-tile.verdantia{background:linear-gradient(145deg,#d8ebcf,#c3e3c5)}
+.district-tile.verdantia a{background:#33694b}
