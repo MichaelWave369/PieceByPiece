@@ -70,3 +70,43 @@ h1 em{font-weight:500;font-size:.5em;letter-spacing:0;vertical-align:12%;font-st
 .settings input{accent-color:#a4d0ac}
 .settings span{font-size:10px;color:#9cbbaf;text-align:right}
 button:focus-visible,input:focus-visible{outline:3px solid #e4cc93;outline-offset:3px}
+
+
+/* Rung 4: first-time visitor onboarding and accessible placement support */
+.guide{margin:8px 0 15px;padding:11px 12px;border:1px solid #afcdb64e;
+  border-radius:12px;background:#e6f0d80e}
+.guide .section-title{margin:0 0 8px;font-size:9px}
+.guide strong{display:block;color:#f3e4bf;font-size:12px}
+.guide p{margin:6px 0 0;color:#c1d6c6;line-height:1.55;font-size:11px}
+.assist{border-top:1px solid #ffffff25;margin:10px 0 6px;padding-top:8px}
+.assist .check{line-height:1.45;margin-bottom:9px}
+.assist button,.secondary-button{font-size:11px;border-radius:10px;padding:10px 11px;
+  border:1px solid #a1bcaf77;color:#f0e6c8;background:#ffffff10}
+.assist button{width:100%;margin:0}
+.assist button:hover:not(:disabled),.secondary-button:hover{background:#ffffff2a}
+.assist-note{margin:7px 0;color:#aac6ba;font-size:10px;line-height:1.5}
+.secondary-button{display:block;width:100%;margin-top:9px}
+.welcome{position:absolute;left:clamp(16px,4vw,66px);top:50%;transform:translateY(-44%);
+  pointer-events:auto;width:min(370px,calc(100vw - 32px));padding:27px;
+  border:1px solid #e1e7d9be;border-radius:24px;
+  background:linear-gradient(140deg,#fff5deF2,#e3eee0F2);color:#2c5550;
+  box-shadow:0 20px 70px #244b4666}
+.welcome-eyebrow{font-size:10px;font-weight:800;letter-spacing:.19em;color:#ac774e}
+.welcome h2{font-family:Georgia,serif;font-size:clamp(26px,3vw,38px);
+  letter-spacing:-.025em;line-height:1.1;margin:14px 0}
+.welcome p{line-height:1.6;font-size:13px;color:#46645d;margin:10px 0 20px}
+.welcome-steps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 20px;
+  font-size:10px;font-weight:700;letter-spacing:.035em;color:#466c5e}
+.welcome-steps span{padding:6px 8px;background:#80ad9830;border-radius:8px}
+.welcome button{display:block;width:100%;border-radius:10px;border:1px solid #547a6f;
+  padding:12px 14px;font-weight:700;font-size:12px}
+#start-building{background:#2d5851;color:#fff5df}
+#welcome-preview{background:transparent;color:#2d5851;margin-top:8px}
+#welcome-preview:hover{background:#a7cab450}
+@media(max-width:760px){
+  .welcome{top:auto;bottom:18px;left:12px;transform:none;padding:16px;
+    width:min(320px,calc(100vw - 24px));border-radius:14px}
+  .welcome h2{font-size:25px;margin:8px 0}
+  .welcome p{font-size:11px;margin:7px 0 10px}
+  .welcome-steps{margin:9px 0 13px}
+}
