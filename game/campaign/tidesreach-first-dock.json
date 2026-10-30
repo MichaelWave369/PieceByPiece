@@ -1,0 +1,196 @@
+{
+  "format": "piecebypiece.city.v1",
+  "metadata": {
+    "id": "tidesreach-first-dock",
+    "title": "Tidesreach: The First Dock",
+    "creator": "Piece by Piece",
+    "description": "Rebuild a lighthouse, the harbor café, and the community boatyard. Light the bay and return trade to the coast.",
+    "difficulty": "thoughtful",
+    "estimatedMinutes": 20,
+    "tags": [
+      "campaign",
+      "coastal",
+      "chapter-two"
+    ]
+  },
+  "city": {
+    "theme": "harbor",
+    "grid": {
+      "width": 14,
+      "height": 14
+    },
+    "seed": 6369
+  },
+  "buildings": [
+    {
+      "id": "beacon",
+      "name": "Starfall Lighthouse"
+    },
+    {
+      "id": "teahouse",
+      "name": "Harbor Tea Room"
+    },
+    {
+      "id": "boatyard",
+      "name": "Community Boatyard"
+    }
+  ],
+  "pieces": [
+    {
+      "id": "beacon-foundation",
+      "buildingId": "beacon",
+      "prefab": "foundation",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "beacon-tower",
+      "buildingId": "beacon",
+      "prefab": "tower",
+      "target": {
+        "x": 3,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "beacon-lamp",
+      "buildingId": "beacon",
+      "prefab": "lamp",
+      "target": {
+        "x": 4,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "beacon-stairs",
+      "buildingId": "beacon",
+      "prefab": "stairs",
+      "target": {
+        "x": 3,
+        "y": 4,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "tea-foundation",
+      "buildingId": "teahouse",
+      "prefab": "foundation",
+      "target": {
+        "x": 9,
+        "y": 3,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "tea-wall",
+      "buildingId": "teahouse",
+      "prefab": "wall",
+      "target": {
+        "x": 10,
+        "y": 3,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "tea-door",
+      "buildingId": "teahouse",
+      "prefab": "door",
+      "target": {
+        "x": 9,
+        "y": 4,
+        "z": 0,
+        "rotation": 180
+      }
+    },
+    {
+      "id": "tea-roof",
+      "buildingId": "teahouse",
+      "prefab": "roof",
+      "target": {
+        "x": 9,
+        "y": 3,
+        "z": 1,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "yard-dock",
+      "buildingId": "boatyard",
+      "prefab": "dock",
+      "target": {
+        "x": 7,
+        "y": 9,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "yard-road",
+      "buildingId": "boatyard",
+      "prefab": "road",
+      "target": {
+        "x": 7,
+        "y": 8,
+        "z": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "yard-bridge",
+      "buildingId": "boatyard",
+      "prefab": "bridge",
+      "target": {
+        "x": 8,
+        "y": 9,
+        "z": 0,
+        "rotation": 90
+      }
+    },
+    {
+      "id": "yard-lamp",
+      "buildingId": "boatyard",
+      "prefab": "lamp",
+      "target": {
+        "x": 8,
+        "y": 10,
+        "z": 0,
+        "rotation": 180
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "ignite-beacon",
+      "title": "Relight Starfall Lighthouse",
+      "kind": "inspect-building",
+      "buildingId": "beacon"
+    },
+    {
+      "id": "deliver-tea",
+      "title": "Bring warm tea to the harbor workers",
+      "kind": "visit-building",
+      "buildingId": "teahouse"
+    },
+    {
+      "id": "launch-ferry",
+      "title": "Return the ferry to the people",
+      "kind": "inspect-building",
+      "buildingId": "boatyard"
+    }
+  ],
+  "rights": {
+    "license": "CC0-1.0",
+    "confirmed": true
+  }
+}
