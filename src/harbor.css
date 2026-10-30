@@ -34,3 +34,22 @@
 .ironhaven-page #iron-rail-controls{grid-template-columns:1fr}
 .district-tile.ironhaven{background:linear-gradient(145deg,#d5dcdd,#bacbcd)}
 .district-tile.ironhaven a{background:#52626a}
+
+/* Final city: a dark civic plaza transformed by a shared public charter. */
+.citadel-page{background:#a6a9bc}
+.citadel-page .harbor-brand{color:#32384e}
+.citadel-page .harbor-panel{background:linear-gradient(155deg,#343d55f9,#262e44fa);border-color:#ddd0ac88}
+.citadel-page .harbor-primary{background:#efcd9a;color:#30384d}
+.citadel-page .harbor-primary:hover:not(:disabled){background:#ffe3b0}
+.citadel-page #harbor-fill{background:linear-gradient(90deg,#94cabb,#eecf98)}
+.citadel-page .harbor-footer{color:#40465c}
+.citadel-page #iron-rail-section{border-top:1px solid #c6d8e36b;padding-top:7px;margin-top:18px}
+.citadel-page #iron-rail-controls{grid-template-columns:1fr}
+.citadel-page .iron-rail-help{color:#d6e3ed;font-size:11px;line-height:1.6}
+.citadel-page #iron-rail-result{border-left:3px solid #edc992;padding:10px;background:#ffffff15;font-size:11px;line-height:1.6}
+.citadel-epilogue{background:linear-gradient(140deg,#e2e9d9,#e2d8be);color:#2b494a;padding:16px;border-radius:14px;margin:14px 0;line-height:1.65}
+.citadel-epilogue h2{color:#294d48;font-family:Georgia,serif;font-size:19px!important;letter-spacing:0!important}
+.citadel-epilogue p{font-size:12px}
+.citadel-epilogue a{display:block;padding:10px;border-radius:8px;background:#385d57;color:#fff1d7;text-decoration:none;text-align:center;font-size:12px}
+.district-tile.final-district{opacity:1;background:linear-gradient(145deg,#ced5df,#b8c2d8)}
+.district-tile.final-district a{background:#46556c}
