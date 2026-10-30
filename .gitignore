@@ -1,0 +1,5 @@
+# Local dependencies, Vite output and build-generated reviewed catalogue
+node_modules/
+dist/
+public/community/
+*.log
