@@ -4,6 +4,7 @@
  */
 import {existsSync,readFileSync} from 'node:fs';
 import {resolve,sep} from 'node:path';
+import {createHash} from 'node:crypto';
 
 const folder=resolve('dist'),expected='/PieceByPiece/';
 const pages=['index.html','districts.html','harbor.html','verdantia.html','ironhaven.html','citadel.html','commons.html','catalogue.html','play-community.html'];
@@ -48,6 +49,7 @@ else{
    else{
     const raw=readFileSync(file);
     if(raw.byteLength!==entry.bytes)fail('Pack size mismatch '+entry.id);
+    if(createHash('sha256').update(raw).digest('hex')!==entry.sha256)fail('Pack SHA-256 mismatch '+entry.id);
    }
   }
  }
