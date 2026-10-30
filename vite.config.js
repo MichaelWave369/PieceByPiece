@@ -10,7 +10,8 @@ export default defineConfig({
    input:{
     main:resolve('index.html'),
     atlas:resolve('districts.html'),
-    harbor:resolve('harbor.html')
+    harbor:resolve('harbor.html'),
+    verdantia:resolve('verdantia.html')
    }
   }
  }
